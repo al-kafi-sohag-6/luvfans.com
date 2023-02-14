@@ -21,4 +21,4 @@ jobs:
         ftp_host: ${{ secrets.FTP_SERVER }}
         ftp_username: ${{ secrets.FTP_USERNAME }}
         ftp_password: ${{ secrets.FTP_PASSWORD }}
-        dist_target_dir: '././htdocs/'
+        dist_target_dir: 'httpdocs/'
