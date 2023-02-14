@@ -19,9 +19,9 @@ jobs:
         node-version: 16
         
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.3
+      uses: sebastianpopp/ftp-action@releases/v2
       with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ${{secrets.FTP_SERVER_DIR}}
+        remoteDir: ${{secrets.FTP_SERVER_DIR}}
