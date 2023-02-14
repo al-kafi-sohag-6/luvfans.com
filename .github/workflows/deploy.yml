@@ -19,9 +19,9 @@ jobs:
         node-version: 16
         
     - name: Sync files
-      uses: sand4rt/ftp-deployer@v1.7
+      uses: kevinpainchaud/simple-ftp-deploy-action@v1.2.1
       with:
-        host: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        remote_folder: ${{ secrets.FTP_SERVER_DIR }}
+        ftp_host: ${{ secrets.FTP_SERVER }}
+        ftp_username: ${{ secrets.FTP_USERNAME }}
+        ftp_password: ${{ secrets.FTP_PASSWORD }}
+        dist_target_dir: ${{ secrets.FTP_SERVER_DIR }}
