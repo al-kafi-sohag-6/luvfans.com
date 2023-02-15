@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\AdminSettings;
 use App\Models\Subscriptions;
 use App\Models\Categories;
+use App\Models\SubCategories;
 use App\Models\ShopCategories;
 use App\Models\TaxRates;
 use App\Models\States;
@@ -835,6 +836,195 @@ else {
 			return redirect('panel/admin/categories');
 	}//<--- END METHOD
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// START
+	public function sub_categories()
+	{
+		$subCategories      = SubCategories::orderBy('name')->with(['category'])->get();
+		$totalSubCategories = count( $subCategories );
+
+		return view('admin.sub-categories', compact('totalSubCategories', 'subCategories'));
+	}//<--- END METHOD
+
+	public function sub_AddCategories()
+	{
+		$categories      = Categories::orderBy('name')->get();
+		return view('admin.add-sub-categories', compact('categories'));
+	}//<--- END METHOD
+
+	public function sub_storeCategories(Request $request) {
+
+		$temp            = 'public/temp/'; // Temp
+	  	$path            = 'public/img-sub-category/'; // Path General
+
+		Validator::extend('ascii_only', function($attribute, $value, $parameters){
+    		return !preg_match('/[^x00-x7F\-]/i', $value);
+		});
+
+		$rules = array(
+          'name'        => 'required',
+	      'slug'        => 'required|ascii_only|unique:sub_categories,slug',
+	      'thumbnail'   => 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
+        );
+
+		$this->validate($request, $rules);
+
+		if( $request->hasFile('thumbnail') ) {
+
+		$extension       = $request->file('thumbnail')->getClientOriginalExtension();
+		$type_mime_image = $request->file('thumbnail')->getMimeType();
+		$sizeFile        = $request->file('thumbnail')->getSize();
+		$thumbnail       = $request->slug.'-'.Str::random(32).'.'.$extension;
+
+		if( $request->file('thumbnail')->move($temp, $thumbnail) ) {
+
+			$image = Image::make($temp.$thumbnail);
+
+			\File::copy($temp.$thumbnail, $path.$thumbnail);
+			\File::delete($temp.$thumbnail);
+			}// End File
+		} // HasFile
+
+else {
+	$thumbnail = '';
+}
+
+		$sql              = New SubCategories;
+		$sql->name        = $request->name;
+		$sql->category_id = $request->category_id;
+		$sql->slug        = $request->slug;
+		$sql->keywords    = $request->keywords;
+		$sql->description = $request->description;
+		$sql->mode        = $request->mode ?? 'off';
+		$sql->image       = $thumbnail;
+		$sql->save();
+
+		\Session::flash('success_message', 'Sub-category successfully added!');
+
+    	return redirect('panel/admin/sub-categories');
+
+	}//<--- END METHOD
+
+	public function sub_editCategories($id) {
+
+		$sub_categories = SubCategories::find($id);
+		$categories     = Categories::orderBy('name')->get();
+
+		return view('admin.edit-sub-categories',compact('sub_categories', 'categories'));
+
+	}//<--- END METHOD
+
+	public function sub_updateCategories(Request $request)
+	{
+		$subcategories     = SubCategories::find($request->id);
+		$temp              = 'public/temp/'; // Temp
+	  	$path              = 'public/img-sub-category/'; // Path General
+
+	  if(!isset($subcategories)) {
+			return redirect('panel/admin/sub-categories');
+		}
+
+		Validator::extend('ascii_only', function($attribute, $value, $parameters){
+    		return !preg_match('/[^x00-x7F\-]/i', $value);
+		});
+
+		$rules = array(
+          'name'        => 'required',
+	      'slug'        => 'required|ascii_only|unique:sub_categories,slug,'.$request->id,
+	      'thumbnail'   => 'mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
+	     );
+
+		$this->validate($request, $rules);
+
+		if($request->hasFile('thumbnail')) {
+
+		$extension        = $request->file('thumbnail')->getClientOriginalExtension();
+		$type_mime_image  = $request->file('thumbnail')->getMimeType();
+		$sizeFile         = $request->file('thumbnail')->getSize();
+		$thumbnail        = $request->slug.'-'.Str::random(32).'.'.$extension;
+
+		if($request->file('thumbnail')->move($temp, $thumbnail)) {
+
+			$image = Image::make($temp.$thumbnail);
+
+			\File::copy($temp.$thumbnail, $path.$thumbnail);
+			\File::delete($temp.$thumbnail);
+
+			// Delete Old Image
+			\File::delete($path.$subcategories->thumbnail);
+
+			}// End File
+		} // HasFile
+		else {
+			$thumbnail = $subcategories->image;
+		}
+
+		// UPDATE CATEGORY
+		$subcategories->name        = $request->name;
+		$subcategories->category_id = $request->category_id;
+		$subcategories->slug        = $request->slug;
+		$subcategories->keywords    = $request->keywords;
+		$subcategories->description = $request->description;
+		$subcategories->mode        = $request->mode ?? 'off';
+		$subcategories->image       = $thumbnail;
+		$subcategories->save();
+
+		\Session::flash('success_message', __('general.success_update'));
+		return redirect('panel/admin/sub-categories');
+
+	}//<--- END METHOD
+
+	public function sub_deleteCategories($id)
+	{
+
+		$subcategories   = SubCategories::findOrFail($id);
+		$thumbnail    = 'public/img-sub-category/'.$subcategories->image; // Path General
+
+		// $userCategory = User::where('sub_categories_id', $id)->update(['categories_id' => 0]);
+
+		// Delete Sub Category
+		$subcategories->delete();
+
+		// Delete Thumbnail
+		if ( \File::exists($thumbnail) ) {
+			\File::delete($thumbnail);
+		}//<--- IF FILE EXISTS
+
+		return redirect('panel/admin/sub-categories');
+	}//<--- END METHOD
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public function posts(Request $request)
 	{
 		$data = Updates::orderBy('id','desc')->paginate(20);

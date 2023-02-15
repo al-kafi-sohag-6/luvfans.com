@@ -60,6 +60,15 @@ use App\Http\Controllers\UploadMediaStoryController;
  | Index
  |-----------------------------------
  */
+
+ //Setup Routes
+ Route::get('migrate', function () {
+	
+	/* php artisan migrate */
+    \Artisan::call('migrate --path=/database/migrations/2023_02_15_111705_create_sub_category_table.php');
+    dd("Done");
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('home', function() {
@@ -583,7 +592,15 @@ Route::group(['middleware' => 'private.content'], function() {
  	Route::get('panel/admin/categories/edit/{id}',[AdminController::class, 'editCategories'])->name('categories');
  	Route::post('panel/admin/categories/update',[AdminController::class, 'updateCategories']);
  	Route::post('panel/admin/categories/delete/{id}',[AdminController::class, 'deleteCategories']);
-
+	
+	//Subcategories
+	Route::get('panel/admin/sub-categories',[AdminController::class, 'sub_categories']);
+ 	Route::get('panel/admin/sub-categories/add',[AdminController::class, 'sub_AddCategories']);
+ 	Route::post('panel/admin/sub-categories/add',[AdminController::class, 'sub_storeCategories']);
+ 	Route::get('panel/admin/sub-categories/edit/{id}',[AdminController::class, 'sub_editCategories']);
+ 	Route::post('panel/admin/sub-categories/update',[AdminController::class, 'sub_updateCategories']);
+ 	Route::post('panel/admin/sub-categories/delete/{id}',[AdminController::class, 'sub_deleteCategories']);
+	 
 	// Posts
  	Route::get('panel/admin/posts',[AdminController::class, 'posts'])->name('posts');
 	Route::post('panel/admin/posts/delete/{id}',[AdminController::class, 'deletePost']);

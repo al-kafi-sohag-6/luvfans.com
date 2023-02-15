@@ -328,6 +328,14 @@
               </li><!-- /end list -->
               @endif
 
+              @if (auth()->user()->hasPermission('sub-categories'))
+              <li class="nav-item">
+                  <a href="{{ url('panel/admin/sub-categories') }}" class="nav-link text-truncate @if (request()->is('panel/admin/sub-categories')) active @endif">
+                      <i class="bi-list-stars me-2"></i> Sub Categories
+                  </a>
+              </li><!-- /end list -->
+              @endif
+
               @if (auth()->user()->hasPermission('reports'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/reports') }}" class="nav-link text-truncate @if (request()->is('panel/admin/reports')) active @endif">
