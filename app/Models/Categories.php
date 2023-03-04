@@ -12,4 +12,8 @@ class Categories extends Model {
 	public function users() {
 		return $this->hasMany('App\Models\User')->where('status','active');
 	}
+
+	public function subcategories(){
+		return $this->hasMany('App\Models\SubCategories', 'category_id')->where('mode','on');
+	}
 }

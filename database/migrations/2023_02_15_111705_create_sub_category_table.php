@@ -19,7 +19,7 @@ class CreateSubCategoryTable extends Migration
             $table->string("slug");
             $table->text("description");
             $table->string("keywords");
-            $table->enum('mode', ['on', 'off'])->default('on');
+            $table->enum('mode', ['on', 'off', 'pending'])->default('on');
             $table->text("image");
 
             $table->unsignedInteger('category_id');

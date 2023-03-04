@@ -30,6 +30,13 @@
       var profile_id = {{$user->id}};
       var sort_post_by_type_media = "{!!$sortPostByTypeMedia!!}";
   </script>
+
+  <style>
+    main{
+        position: relative;
+        top: 80px;
+    }
+  </style>
   @endsection
 
 @section('content')
@@ -491,7 +498,7 @@
                 <a href="{{$user->spotify}}" title="{{$user->spotify}}" target="_blank" class="text-muted share-btn-user"><i class="bi bi-spotify mr-2"></i></a>
               @endif
 
-              @if ($user->categories_id != '0' && $user->categories_id != '' && $user->verified_id == 'yes')
+              {{--  @if ($user->categories_id != '0' && $user->categories_id != '' && $user->verified_id == 'yes')
               <div class="w-100 mt-2">
 
               @foreach (Categories::where('mode','on')->orderBy('name')->get() as $category)
@@ -505,6 +512,25 @@
             @endforeach
 
               </div>
+            @endif  --}}
+
+            @if($user->user_category->count() > 0)
+                @foreach ($user->user_category->groupBy('category_id') as $uc)
+                @php
+                    $category = $uc->first();
+                @endphp
+                <a href="{{ url('category', $category->category->slug) }}" class="button-white-sm mb-2">
+                    {{ Lang::has('categories.' . $category->category->slug) ? __('categories.' . $category->category->slug) : $category->category->name }}
+                </a>
+                    @if(isset($uc->sub_category))
+                    @foreach ($uc as $usc)
+                        <a href="{{url('category', [$category->category->slug, $usc->sub_category->slug]) }}" class="button-white-sm mb-2">
+                            {{ Lang::has('subCategories.' . $usc->sub_category->slug) ? __('subCategories.' . $usc->sub_category->slug) : $usc->sub_category->name }}
+                        </a>
+
+                    @endforeach
+                    @endif
+                @endforeach
             @endif
           </div><!-- card-body -->
         </div><!-- card -->
@@ -595,7 +621,7 @@
 
           @include('includes.updates')
         </div>
-        @endif   
+        @endif
 
           @endif
       </div>

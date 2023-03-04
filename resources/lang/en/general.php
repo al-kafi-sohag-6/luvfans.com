@@ -1213,4 +1213,7 @@ return array(
 		'see_all_transactions' => 'See all transactions',
 		'one_time_payments' => 'One-time payments',
 		'money_format' => 'Money format',
+
+		//Settings page
+		'category_information' => 'Category & Sub-category',
 );

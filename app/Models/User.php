@@ -488,4 +488,9 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->hasMany(Replies::class);
       }
 
+      public function user_category()
+      {
+        return $this->hasMany(UserCategory::class, 'user_id');
+      }
+
 }

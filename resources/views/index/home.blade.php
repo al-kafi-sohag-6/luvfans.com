@@ -32,7 +32,7 @@
             {{trans('general.launch_special_p')}}
           </p>
           </div>
-		
+
 		 <div class="btn-block text-center mb-5">
           <h2 class="txt-black">{{trans('general.header_box_2')}}</h2>
           <p>
@@ -110,7 +110,7 @@
 
           <div class="owl-carousel owl-theme">
             @foreach ($users as $response)
-              @include('includes.listing-creators')
+                @include('includes.listing-creators')
           @endforeach
           </div>
         </div><!-- End Row -->
@@ -167,7 +167,7 @@
         {{trans('general.earnings_simulator_subtitle')}}
       </p>
     </div>
-	  
+
 	 <!-- Earnings Calculator Script -->
     <div class="row">
       <div class="col-md-6">

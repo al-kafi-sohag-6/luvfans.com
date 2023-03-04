@@ -7,16 +7,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\AdminSettings;
-use App\Models\Categories;
 use App\Models\Updates;
 use App\Models\LiveStreamings;
 use App\Models\Bookmarks;
 use App\Models\Comments;
 use App\Models\Stories;
 use App\Models\StoryFonts;
+use App\Models\Categories;
+use App\Models\UserCategory;
+use App\Models\SubCategories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Helper;
 use Image;
 use Cache;
@@ -45,7 +50,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {      
+    {
       try {
         // Check Datebase access
          $this->settings;
@@ -53,7 +58,7 @@ class HomeController extends Controller
         // Redirect to Installer
         return redirect('install/script');
       }
-      
+
         // Home Guest
         if (auth()->guest()) {
           $users = User::where('featured','yes')
@@ -173,7 +178,7 @@ class HomeController extends Controller
             }
 
           return view('index.home-session', [
-            'users' => $users, 
+            'users' => $users,
             'updates' => $updates,
             'stories' => $stories,
             'fonts' => $fonts ?? null
@@ -317,7 +322,7 @@ class HomeController extends Controller
                   ->whereHideName('no')
                   ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
                 ->orderBy('featured_date','desc')
-                ->paginate(12);
+                ->paginate(4);
 
       } else {
 
@@ -332,7 +337,7 @@ class HomeController extends Controller
                   $this->filterByGenderAge($users);
 
                   $users = $users->orderBy(\DB::raw($orderBy),'desc')
-                  ->paginate(12);
+                  ->paginate(4);
         } else {
 
           $data = User::where('users.status','active');
@@ -399,7 +404,7 @@ class HomeController extends Controller
               ->orderBy(\DB::raw($orderBy), 'DESC')
               ->orderBy('users.id', 'ASC')
               ->select('users.*')
-              ->paginate(12);
+              ->paginate(4);
         }
       }
 
@@ -408,140 +413,120 @@ class HomeController extends Controller
     		}
         return view('index.creators', [
           'users' => $users,
-          'title' => $title
+          'title' => $title,
+          'isSubCategory' => false,
         ]);
     }
 
-    public function category($slug, $type = false)
+    public function category($slug, $subcategory = false, $type = false)
     {
-      $category = Categories::where('slug', '=', $slug)->where('mode','on')->firstOrFail();
+      $data = [];
+      $category = Categories::where('slug', $slug)->where('mode','on')->firstOrFail();
       $title    = \Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name;
 
+      if($subcategory == 'featured' || $subcategory == 'more-active' || $subcategory == 'new' || $subcategory == 'free'){
+        $type = $subcategory;
+        $subcategory = false;
+      }elseif($subcategory != false){
+        $subcategory = SubCategories::where('slug', $subcategory)->where('mode','on')->firstOrFail();
+        $isSubCategory = true;
+      }
+
+      $users =  UserCategory::with(['user'])->where('category_id', $category->id);
+      if($subcategory){
+        $users = $users->where('sub_category_id', $subcategory->id);
+      }
+      $users = $users->groupBy('user_categories.user_id');
+      $users = $users->whereHas('user', function ($query) {
+          $query->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
+                ->whereHideProfile('no')
+                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
+                ->where('status','active');
+      });
       switch ($type) {
         case 'featured':
-        $orderBy = 'featured_date';
-        $title = $title.' - '.trans('general.featured_creators');
-          break;
+            $users = $users->whereHas('user', function ($query) {
+                $query->where('featured', 'yes')
+                ->orderBy('featured_date', 'DESC');
+            });
+            $title = trans('general.featured_creators');
+            break;
 
         case 'more-active':
-        $orderBy = 'COUNT(updates.id)';
-        $title = $title.' - '.trans('general.more_active_creators');
-          break;
+            $orderBy = 'COUNT(updates.id)';
+            $user = $users->leftjoin('updates', 'updates.user_id', '=', 'user_categories.user_id')
+            ->orderBy(\DB::raw($orderBy), 'DESC');
+            $title = trans('general.more_active_creators');
+            break;
 
         case 'new':
-        $orderBy = 'id';
-        $title = $title.' - '.trans('general.new_creators');
-          break;
+            $users = $users->whereHas('user', function ($query) {
+                $query->orderBy('id', 'DESC');
+            });
+            $title = trans('general.new_creators');
+            break;
 
-      case 'free':
-        $orderBy = 'free_subscription';
-        $title = $title.' - '.trans('general.creators_with_free_subscription');
-          break;
+        case 'free':
+            $users = $users->whereHas('user', function ($query) {
+                $query->whereFreeSubscription('yes');
+            });
+            $title = trans('general.creators_with_free_subscription');
+            break;
 
         default:
-        $orderBy = 'COUNT(subscriptions.id)';
-          break;
+            $title = trans('general.explore_our_creators');
+            break;
+        }
+
+      //Filer Bye Gender & Age
+        $users->when(request('gender'), function($users) {
+            $users = $users->whereHas('user', function ($query) {
+                $query->where('gender', request('gender'));
+            });
+        });
+        $users->when(request('min_age') >= 18, function($users) {
+            $users = $users->whereHas('user', function ($query) {
+                $minAge = Carbon::now()->subYear(request('min_age'));
+                $query->where(\DB::raw('STR_TO_DATE(birthdate, "%m/%d/%Y")'),'<', Carbon::parse($minAge->format('m/d/Y')));
+            });
+        });
+        $users->when(request('max_age') >= 18, function($users) {
+            $users = $users->whereHas('user', function ($query) {
+                $maxAge = Carbon::now()->subYear(request('max_age'));
+                $query->where(\DB::raw('STR_TO_DATE(birthdate, "%m/%d/%Y")'),'>=', Carbon::parse($maxAge->format('m/d/Y')));
+            });
+        });
+
+        $users = $users->get();
+
+      foreach($users as $key => $user){
+        if($user->user){
+            $data[$key] = $user->user;
+        }
       }
 
-      if ($type == 'free') {
-        $users = User::where('users.status','active')
-            ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-              ->whereVerifiedId('yes')
-              ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-              ->whereFreeSubscription('yes')
-              ->whereHideProfile('no')
-              ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
+      $collection = new Collection($data);
+      // Paginate the collection with 4 items per page
+      $perPage = 4;
 
-              $this->filterByGenderAge($users);
+      $currentPage = LengthAwarePaginator::resolveCurrentPage();
+      $pagedData = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+      $paginator = new LengthAwarePaginator($pagedData, count($collection), $perPage, $currentPage, [
+        'path' => request()->url(),
+        'query' => request()->query(),
+        'baseURL' =>  url(''),
+    ]);
 
-            $users = $users->orderBy($orderBy, 'desc')
-            ->paginate(12);
-      } else {
-
-        $data = User::where('users.status','active');
-
-        $whereRawFeatured = $type == 'featured' ? 'featured = "yes"' : 'users.status = "active"';
-
-          $data->where('users.status','active')
-              ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-              ->whereVerifiedId('yes')
-              ->where('users.id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-              ->whereRelation('plans', 'status', '1')
-              ->whereFreeSubscription('no')
-              ->whereHideProfile('no')
-              ->whereRaw($whereRawFeatured)
-              ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
-
-              $this->filterByGenderAge($data);
-
-            $data->orWhere('users.status','active')
-              ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-              ->whereVerifiedId('yes')
-              ->where('users.id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-              ->whereFreeSubscription('yes')
-              ->whereHideProfile('no')
-              ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
-              ->whereRaw($whereRawFeatured);
-
-              $this->filterByGenderAge($data);
-
-              if ($type == 'more-active') {
-                $data->leftjoin('updates', 'updates.user_id', '=', 'users.id');
-              }
-
-              if (! $type) {
-                $data->leftjoin('plans', 'plans.user_id', '=', 'users.id')
-                ->leftjoin('subscriptions', 'subscriptions.stripe_price', '=', 'plans.name');
-
-                $data->orWhere('subscriptions.stripe_id', '=', '')
-                ->where('ends_at', '>=', now())
-                ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
-
-                $this->filterByGenderAge($data);
-
-                $data->orWhere('subscriptions.stripe_id', '<>', '')
-                ->where('stripe_status', 'active')
-                ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
-
-                $this->filterByGenderAge($data);
-
-                $data->orWhere('subscriptions.stripe_id', '<>', '')
-                ->where('ends_at', '>=', now())
-                ->where('stripe_status', 'canceled')
-                ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
-
-                $this->filterByGenderAge($data);
-
-                $data->orWhere('subscriptions.stripe_id', '=', '')
-                ->whereFree('yes')
-                ->where('categories_id', 'LIKE', '%'.$category->id.'%')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%');
-
-                $this->filterByGenderAge($data);
-              }
-
-
-            $users = $data->groupBy('users.id')
-                ->orderBy(\DB::raw($orderBy), 'DESC')
-                ->orderBy('users.id', 'ASC')
-                ->select('users.*')
-                ->paginate(12);
-      }
-
-        if ($this->request->input('page') > $users->lastPage()) {
-    			abort('404');
-    		}
         return view('index.categories', [
-          'users' => $users,
-            'title' => $title,
-            'slug' => $slug,
-            'image' => $category->image,
-            'keywords' => $category->keywords,
-            'description' => $category->description,
-            'isCategory' => true,
+          'users' => $paginator,
+          'title' => $title,
+          'catSlug' => $slug,
+          'subCatSlug' => $subcategory->slug ?? false,
+          'image' => $category->image,
+          'keywords' => $category->keywords,
+          'description' => $category->description,
+          'isCategory' => true,
+          'isSubCategory' => $isSubCategory ?? false,
         ]);
     }
 
@@ -730,7 +715,7 @@ class HomeController extends Controller
       {
         $type = $this->request->type == 'free' ?: false;
         $users = $this->userExplore($type);
-        
+
         return view('includes.listing-explore-creators', ['users' => $users])->render();
       }
 
@@ -753,7 +738,8 @@ class HomeController extends Controller
     		}
 
         return view('index.creators-live', [
-          'users' => $users
+          'users' => $users,
+          'isSubCategory' => false,
         ]);
       }// End method creatorsBroadcastingLive
 }

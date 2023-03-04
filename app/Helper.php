@@ -1036,8 +1036,8 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 
 		switch ($settings->date_format) {
 			case 'M d, Y':
-				$date = 'm/d/Y';
-				$datePickerFormat = 'mm/dd/yyyy';
+				$date = 'M/d/Y';
+				$datePickerFormat = 'M/dd/yyyy';
 				break;
 
 				case 'd M, Y':

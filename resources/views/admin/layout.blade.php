@@ -331,7 +331,7 @@
               @if (auth()->user()->hasPermission('sub-categories'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/sub-categories') }}" class="nav-link text-truncate @if (request()->is('panel/admin/sub-categories')) active @endif">
-                      <i class="bi-list-stars me-2"></i> Sub Categories
+                      <i class="bi-list-stars me-2"></i>{{ __('admin.subcategories') }}
                   </a>
               </li><!-- /end list -->
               @endif
@@ -339,12 +339,12 @@
               @if (auth()->user()->hasPermission('reports'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/reports') }}" class="nav-link text-truncate @if (request()->is('panel/admin/reports')) active @endif">
-                      <i class="bi-flag me-2"></i> 
+                      <i class="bi-flag me-2"></i>
 
                       @if (Reports::first())
                         <i class="bi-circle-fill small text-warning alert-admin"></i>
                       @endif
-                      
+
                       {{ __('admin.reports') }}
                   </a>
               </li><!-- /end list -->

@@ -23,6 +23,8 @@ use App\Models\Transactions;
 use App\Models\VerificationRequests;
 use App\Models\Deposits;
 use App\Models\Categories;
+use App\Models\UserCategory;
+use App\Models\SubCategories;
 use App\Helper;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -148,7 +150,7 @@ class UserController extends Controller
     			'stat_revenue_week' => $stat_revenue_week,
           'stat_revenue_last_week' => $stat_revenue_last_week,
     			'stat_revenue_month' => $stat_revenue_month,
-          'stat_revenue_last_month' => $stat_revenue_last_month 
+          'stat_revenue_last_month' => $stat_revenue_last_month
         ]);
   }
 
@@ -863,14 +865,37 @@ class UserController extends Controller
 
        $story = $this->request->story ?: auth()->user()->story;
 
-       $categories = $this->request->categories_id ? implode( ',', $this->request->categories_id) : '';
+      //  $categories = $this->request->categories_id ? implode( ',', $this->request->categories_id) : '';
 
       $user                  = User::find($id);
       $user->name            = strip_tags($this->request->full_name);
       $user->username        = trim($this->request->username);
       $user->email           = $this->request->email ? trim($this->request->email) : auth()->user()->email;
       $user->website         = trim($this->request->website) ?? '';
-      $user->categories_id   = $categories;
+      // $user->categories_id   = $categories;
+
+      UserCategory::where('user_id', $user->id)->delete();
+      if(isset($this->request->category)){
+        foreach($this->request->category as $categories){
+            if(isset($categories['subcategory'])){
+                foreach($categories['subcategory'] as $subcategories){
+                    $user_cat = new UserCategory();
+                    $user_cat->category_id = $categories['category'];
+                    $user_cat->sub_category_id  = $subcategories;
+                    $user_cat->user_id = $user->id;
+                    $user_cat->save();
+                }
+            }else{
+                if($categories['category'] !== null && $categories['category'] !== '' ){
+                    $user_cat = new UserCategory();
+                    $user_cat->category_id = $categories['category'];
+                    $user_cat->user_id = $user->id;
+                    $user_cat->save();
+                }
+            }
+        }
+      }
+
       $user->profession      = $this->request->profession;
       $user->countries_id    = $this->request->countries_id;
       $user->city            = $this->request->city;
@@ -900,11 +925,13 @@ class UserController extends Controller
       $user->hide_name     = $this->request->hide_name ?? 'no';
       $user->save();
 
-      return response()->json([
-              'success' => true,
-              'url' => url(trim($this->request->username)),
-              'locale' => $this->request->language != '' && config('app.locale') != $this->request->language ? true : false,
-            ]);
+    //   return response()->json([
+    //           'success' => true,
+    //           'url' => url(trim($this->request->username)),
+    //           'locale' => $this->request->language != '' && config('app.locale') != $this->request->language ? true : false,
+    //         ]);
+
+      return redirect()->back()->withStatus(trans('admin.success_update'));
 
     }//<--- End Method
 
@@ -1555,7 +1582,7 @@ class UserController extends Controller
         if ($data->user_id != auth()->id() && ! auth()->user()->isSuperAdmin()) {
           abort(404);
         }
-          
+
       $taxes = TaxRates::whereIn('id', collect(explode('_', $data->taxes)))->get();
       $total = $data->amount + ($data->amount * $taxes->sum('percentage') / 100);
       $creator = isset($data->subscribed()->username) ? ' @'.$data->subscribed()->username : null;
@@ -2056,7 +2083,7 @@ class UserController extends Controller
         for ($i=1; $i <= $daysMonth; ++$i) {
           $date = date('Y-m-d', strtotime($dateFormat.$i));
           $payments = auth()->user()->myPaymentsReceived()->whereDate('created_at', '=', $date)->sum('earning_net_user');
-          
+
           $monthsData[] =  "$monthFormat $i";
           $earningNetUser = $payments;
           $earningNetUserSum[] = $earningNetUser;
@@ -2079,12 +2106,12 @@ class UserController extends Controller
           for ($i=1; $i <= $daysMonth; ++$i) {
             $date = date('Y-m-d', strtotime($dateFormat.$i));
             $payments = auth()->user()->myPaymentsReceived()->whereDate('created_at', '=', $date)->sum('earning_net_user');
-            
+
             $monthsData[] =  "$monthFormat $i";
             $earningNetUser = $payments;
             $earningNetUserSum[] = $earningNetUser;
           }
-          
+
           $label = $monthsData;
           $data = $earningNetUserSum;
 
@@ -2099,7 +2126,7 @@ class UserController extends Controller
               $month = str_pad($i, 2, "0", STR_PAD_LEFT);
               $date = date('Y-m', strtotime($dateFormat.$month));
               $payments = auth()->user()->myPaymentsReceived()->where('created_at', 'LIKE', '%'.$date.'%')->sum('earning_net_user');
-              
+
               $monthsData[] =  __("months.$month");
               $earningNetUser = $payments;
               $earningNetUserSum[] = $earningNetUser;
@@ -2108,7 +2135,7 @@ class UserController extends Controller
             $label = $monthsData;
             $data = $earningNetUserSum;
             break;
-      
+
       default:
 
       return response()->json([

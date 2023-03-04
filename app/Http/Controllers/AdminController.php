@@ -1005,7 +1005,11 @@ else {
 		return redirect('panel/admin/sub-categories');
 	}//<--- END METHOD
 
-	
+	public function category_subcategory($category_id){
+		$subcategories = SubCategories::where('category_id', $category_id)->where('mode','on')->orderBy('name', 'asc')->get();
+
+		return response()->json($subcategories);
+	}
 	
 	
 	

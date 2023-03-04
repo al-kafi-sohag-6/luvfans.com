@@ -1,4 +1,4 @@
-	<div class="card card-updates h-100 card-user-profile shadow-sm">
+<div class="card card-updates h-100 card-user-profile shadow-sm">
 	<div class="card-cover" style="background: @if ($response->cover != '') url({{ Helper::getFile(config('path.cover').$response->cover) }})  @endif #505050 center center; background-size: cover;"></div>
 	<div class="card-avatar @if ($response->isLive())liveLink @endif" @if ($response->isLive()) data-url="{{ url('live', $response->username) }}" @endif>
 

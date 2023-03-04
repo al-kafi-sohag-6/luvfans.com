@@ -427,7 +427,7 @@ trait Functions {
 					if ($referred) {
 						// Check if the user who referred exists
 						$referredBy = User::findOrFail($referred->referred_by);
-							
+
 						if ($referredBy) {
 							// Check numbers of transactions
 							$transactions = ReferralTransactions::whereUserId($userId)->count();
@@ -441,7 +441,7 @@ trait Functions {
 											$refer_percent = $referredBy->custom_refer;
 										}
 									}else{
-										
+
 										if($settings->referral_system == 'on'){
 											if($referredBy->custom_refer == 0){
 												$refer_percent = $settings->percentage_referred;
@@ -454,7 +454,7 @@ trait Functions {
 									}
 									// $adminEarningFinal = $adminEarning - ($adminEarning * $settings->percentage_referred/100);
 									$adminEarningFinal = $adminEarning - ($adminEarning * $refer_percent/100);
-								
+
 									$earningNetUser = ($adminEarning - $adminEarningFinal);
 									$adminEarning   = ($adminEarning - $earningNetUser);
 
@@ -663,7 +663,7 @@ trait Functions {
 				'platform' => $platform,
 				'country' => $country->country_name ?? null,
 				'updated_at' => now()
-			]); 
+			]);
 		} catch (\Exception $e) {
 			\Log::debug($e->getMessage());
 		}

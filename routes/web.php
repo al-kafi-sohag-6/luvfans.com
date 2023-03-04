@@ -121,6 +121,7 @@ Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVer
  Route::get('ajax/updates', [UpdatesController::class, 'ajaxUpdates']);
  Route::get('ajax/user/updates', [HomeController::class, 'ajaxUserUpdates']);
  Route::get('loadmore/comments', [CommentsController::class, 'loadmore']);
+ Route::get('panel/admin/categories-subcategories/{id}',[AdminController::class, 'category_subcategory'])->name('category_subcategory');
 
  /*
   |-----------------------------------
@@ -476,7 +477,7 @@ Route::group(['middleware' => 'private.content'], function() {
 	Route::get('creators/{type?}',[HomeController::class, 'creators']);
 
 	// Category
-	Route::get('category/{slug}/{type?}',[HomeController::class, 'category'])->name('seo');
+	Route::get('category/{slug}/{subcategory?}/{type?}',[HomeController::class, 'category'])->name('seo');
 
 	// Profile User
 	Route::get('{slug}', [UserController::class, 'profile'])->where('slug','[A-Za-z0-9\_-]+')->name('profile');
@@ -600,6 +601,7 @@ Route::group(['middleware' => 'private.content'], function() {
  	Route::get('panel/admin/sub-categories/edit/{id}',[AdminController::class, 'sub_editCategories']);
  	Route::post('panel/admin/sub-categories/update',[AdminController::class, 'sub_updateCategories']);
  	Route::post('panel/admin/sub-categories/delete/{id}',[AdminController::class, 'sub_deleteCategories']);
+
 	 
 	// Posts
  	Route::get('panel/admin/posts',[AdminController::class, 'posts'])->name('posts');
