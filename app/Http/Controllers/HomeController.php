@@ -639,46 +639,83 @@ class HomeController extends Controller
     public function searchCreator()
     {
       $query = $this->request->get('user');
-      $data = "";
+      $user_data = "";
+      $cat_data = "";
+      $sub_cat_data = "";
 
       if ($query != '' && strlen($query) >= 2) {
         $sql = User::where('status','active')
-            ->where('username','LIKE', '%'.$query.'%')
-             ->whereVerifiedId('yes')
-             ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-             ->whereRelation('plans', 'status', '1')
-              ->whereFreeSubscription('no')
-              ->whereHideProfile('no')
-              ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
+                    ->where('username','LIKE', '%'.$query.'%')
+                    ->whereVerifiedId('yes')
+                    ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
+                    ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
 
-              ->orWhere('name','LIKE', '%'.$query.'%')
-               ->whereVerifiedId('yes')
-               ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-               ->whereRelation('plans', 'status', '1')
-                ->whereFreeSubscription('no')
-                ->whereHideProfile('no')
-                ->whereHideName('no')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
+                    ->orWhere('name','LIKE', '%'.$query.'%')
+                    ->whereHideProfile('no')
+                    ->whereHideName('no')
+                    ->orderBy('id','desc')
+                    ->take(5)
+                    ->get();
 
-             ->orWhere('status','active')
-              ->where('username','LIKE', '%'.$query.'%')
-                ->whereVerifiedId('yes')
-                ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-                ->whereFreeSubscription('yes')
-                ->whereHideProfile('no')
-                ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
+             $cat = Categories::where('mode', 'on')
+                                ->where('slug','LIKE', '%'.$query.'%')
+                                ->orWhere('name','LIKE', '%'.$query.'%')
+                                ->take(5)
+                                ->get();
 
-                ->orWhere('status','active')
-                 ->where('name','LIKE', '%'.$query.'%')
-                   ->whereVerifiedId('yes')
-                   ->where('id', '<>', $this->settings->hide_admin_profile == 'on' ? 1 : 0)
-                   ->whereFreeSubscription('yes')
-                   ->whereHideProfile('no')
-                   ->whereHideName('no')
-                   ->where('blocked_countries', 'NOT LIKE', '%'.Helper::userCountry().'%')
-                   ->orderBy('id','desc')
-             ->take(4)
-             ->get();
+
+            $sub_cat = SubCategories::where('mode', 'on')
+                                ->where('slug','LIKE', '%'.$query.'%')
+                                ->orWhere('name','LIKE', '%'.$query.'%')
+                                ->take(5)
+                                ->get();
+
+            if($cat){
+                foreach ($cat as $category){
+                    $cat_data .= '<div class="card border-0">
+                        <div class="list-group list-group-sm list-group-flush">
+                        <a href="'.url('category', $category->slug).'" class="list-group-item list-group-item-action text-decoration-none py-2 px-3 bg-autocomplete">
+                            <div class="media">
+                            <div class="media-left mr-3 position-relative">
+                                <img class="media-object rounded-circle" src="'.url('public/img-category', $category->image).'" width="30" height="30">
+                            </div>
+                            <div class="media-body overflow-hidden">
+                                <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="media-heading mb-0 text-truncate">
+                                    '.$category->name.'
+                                </h6>
+                                </div>
+                                                    <small class="text-truncate m-0 w-100 text-left d-block mt-1">'.$category->slug.'</small>
+                            </div>
+                        </div>
+                            </a>
+                        </div>
+                    </div>';
+                }
+            }
+            if($sub_cat){
+                foreach ($sub_cat as $subcategory){
+                    $sub_cat_data .= '<div class="card border-0">
+                        <div class="list-group list-group-sm list-group-flush">
+                        <a href="'.url('category', [$subcategory->category->slug, $subcategory->slug]).'" class="list-group-item list-group-item-action text-decoration-none py-2 px-3 bg-autocomplete">
+                            <div class="media">
+                            <div class="media-left mr-3 position-relative">
+                                <img class="media-object rounded-circle" src="'.url('public/img-sub-category', $subcategory->image).'" width="30" height="30">
+                            </div>
+                            <div class="media-body overflow-hidden">
+                                <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="media-heading mb-0 text-truncate">
+                                    '.$subcategory->name.'
+                                </h6>
+                                </div>
+                                                    <small class="text-truncate m-0 w-100 text-left d-block mt-1">'.$subcategory->slug.'</small>
+                            </div>
+                        </div>
+                            </a>
+                        </div>
+                    </div>';
+                }
+            }
 
           if ($sql) {
             foreach ($sql as $user) {
@@ -686,7 +723,7 @@ class HomeController extends Controller
               $name = $user->hide_name == 'yes' ? $user->username : $user->name;
               $description = $user->profession ?: '@'.$user->username;
 
-              $data .= '<div class="card border-0">
+              $user_data .= '<div class="card border-0">
   							<div class="list-group list-group-sm list-group-flush">
                  <a href="'.url($user->username).'" class="list-group-item list-group-item-action text-decoration-none py-2 px-3 bg-autocomplete">
                    <div class="media">
@@ -706,8 +743,10 @@ class HomeController extends Controller
                </div>
   					 </div>';
             }
-            return $data;
            }
+
+
+           return ['cat' => $cat_data, 'sub_cat' => $sub_cat_data, 'user' => $user_data];
           }
         }// End Method
 

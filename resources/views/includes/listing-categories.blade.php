@@ -7,7 +7,7 @@
 		<span class="category-filter d-lg-block d-none">
 			<i class="bi bi-list-ul mr-2"></i> {{trans('general.categories')}}
 		</span>
-		
+
 	<div class="py-1 mb-4">
 	<div class="text-center">
 		@foreach (Categories::where('mode','on')->orderBy('name')->with('subcategories')->get() as $category)

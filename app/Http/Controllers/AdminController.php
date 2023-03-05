@@ -115,7 +115,7 @@ class AdminController extends Controller
 		$year = date('Y');
 		$daysMonth = Helper::daysInMonth($month, $year);
 		$dateFormat = "$year-$month-";
-		
+
 		$monthFormat  = trans("months.$month");
 		$currencySymbol = $this->settings->currency_symbol;
 
@@ -127,7 +127,7 @@ class AdminController extends Controller
 			$_earningNetUser = $_subscriptions;
 			$earningNetUserSum[] = $_earningNetUser;
 		  }
-		
+
 		$label = implode(',', $monthsData);
 		$data = implode(',', $earningNetUserSum);
 
@@ -137,7 +137,7 @@ class AdminController extends Controller
 		$_subscriptions = Subscriptions::whereRaw("DATE(created_at) = '".$date."'")->count();
 			$lastSubscriptions[] = $_subscriptions;
 		}
-		
+
 		$datalastSales = implode(',', $lastSubscriptions);
 
 		 	return view('admin.dashboard', [
@@ -836,23 +836,23 @@ else {
 			return redirect('panel/admin/categories');
 	}//<--- END METHOD
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// START
 	public function sub_categories()
 	{
-		$subCategories      = SubCategories::orderBy('name')->with(['category'])->get();
+		$subCategories      = SubCategories::orderBy('category_id')->with(['category'])->get();
 		$totalSubCategories = count( $subCategories );
 
 		return view('admin.sub-categories', compact('totalSubCategories', 'subCategories'));
@@ -1010,25 +1010,25 @@ else {
 
 		return response()->json($subcategories);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public function posts(Request $request)
 	{
 		$data = Updates::orderBy('id','desc')->paginate(20);
@@ -1125,7 +1125,7 @@ else {
 
 			// Delete likes
 			Like::where('updates_id', $request->id)->delete();
-			
+
 			$sql->delete();
 
 		return redirect('panel/admin/posts');
@@ -1213,7 +1213,7 @@ else {
 
 	}//<--- End method
 
-	public function themeStore(Request $request) 
+	public function themeStore(Request $request)
 	{
 		$temp  = 'public/temp/'; // Temp
 	  	$path  = 'public/img/'; // Path
@@ -1689,7 +1689,7 @@ else {
 
 			Helper::envUpdate($key, $value);
 		}
-		
+
 		return back()->withSuccessMessage(__('admin.success_update'));
 
 	} // End Method
@@ -2354,82 +2354,82 @@ else {
 	  if (! $request->expectsJson()) {
 		abort(401);
 	  }
-  
+
 	  switch ($request->range) {
 		case 'month':
 		  $month = date('m');
 		  $year  = date('Y');
 		  $daysMonth = Helper::daysInMonth($month, $year);
 		  $dateFormat = "$year-$month-";
-  
+
 		  $monthFormat  = __("months.$month");
 		  $currencySymbol = $this->settings->currency_symbol;
-  
+
 		  for ($i=1; $i <= $daysMonth; ++$i) {
 			$date = date('Y-m-d', strtotime($dateFormat.$i));
 			$payments = Transactions::whereDate('created_at', '=', $date)->sum('earning_net_admin');
-			
+
 			$monthsData[] =  "$monthFormat $i";
 			$earningNetUser = $payments;
 			$earningNetUserSum[] = $earningNetUser;
 		  }
-  
+
 		  $label = $monthsData;
 		  $data = $earningNetUserSum;
-  
+
 		  break;
-  
+
 		  case 'last-month':
 			$month = date('m', strtotime('-1 month'));
 			$year  = date('Y');
 			$daysMonth = Helper::daysInMonth($month, $year);
 			$dateFormat = "$year-$month-";
-  
+
 			$monthFormat  = __("months.$month");
 			$currencySymbol = $this->settings->currency_symbol;
-  
+
 			for ($i=1; $i <= $daysMonth; ++$i) {
 			  $date = date('Y-m-d', strtotime($dateFormat.$i));
 			  $payments = Transactions::whereDate('created_at', '=', $date)->sum('earning_net_admin');
-			  
+
 			  $monthsData[] =  "$monthFormat $i";
 			  $earningNetUser = $payments;
 			  $earningNetUserSum[] = $earningNetUser;
 			}
-			
+
 			$label = $monthsData;
 			$data = $earningNetUserSum;
-  
+
 			break;
-  
+
 			case 'year':
 			  $year  = date('Y');
 			  $dateFormat = "$year-";
 			  $currencySymbol = $this->settings->currency_symbol;
-  
+
 			  for ($i=1; $i <= 12; ++$i) {
 				$month = str_pad($i, 2, "0", STR_PAD_LEFT);
 				$date = date('Y-m', strtotime($dateFormat.$month));
 				$payments = Transactions::where('created_at', 'LIKE', '%'.$date.'%')->sum('earning_net_admin');
-				
+
 				$monthsData[] =  __("months.$month");
 				$earningNetUser = $payments;
 				$earningNetUserSum[] = $earningNetUser;
 			  }
-  
+
 			  $label = $monthsData;
 			  $data = $earningNetUserSum;
 			  break;
-		
+
 		default:
-  
+
 		return response()->json([
 		  'success' => false
 		], 401);
-  
+
 		  break;
 	  }
-  
+
 	  return response()->json([
 		'success' => true,
 		'labels'  => $label,
@@ -2510,7 +2510,7 @@ else {
 		if ($request->hasFile('image')) {
 			$extension = $request->file('image')->getClientOriginalExtension();
 			$file = str_random(5).time().'.'.$extension;
-	
+
 			if ($request->file('image')->move($temp, $file)) {
 				\File::copy($temp.$file, $path.$file);
 				\File::delete($temp.$file);
