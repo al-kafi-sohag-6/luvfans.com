@@ -856,12 +856,16 @@ class UserController extends Controller
         'birthdate' => 'required_if:is_birthdateChanged,==,0|date_format:'.Helper::formatDatepicker().'|before:'.Carbon::now()->subYears(18),
      ], $messages);
 
-      if ($validator->fails()) {
-           return response()->json([
-               'success' => false,
-               'errors' => $validator->getMessageBag()->toArray(),
-           ]);
-       } //<-- Validator
+    //   if ($validator->fails()) {
+    //        return response()->json([
+    //            'success' => false,
+    //            'errors' => $validator->getMessageBag()->toArray(),
+    //        ]);
+    //    } //<-- Validator
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator);
+    }
 
        $story = $this->request->story ?: auth()->user()->story;
 
