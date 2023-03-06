@@ -30,7 +30,7 @@
 		          </div>
 		        </div>
 
-                
+
                 <div class="row mb-3">
 		          <label class="col-sm-2 col-form-label text-lg-end">Category Name</label>
 		          <div class="col-sm-10">
@@ -63,14 +63,25 @@
 		          </div>
 		        </div>
 
-            <fieldset class="row mb-3">
-              <legend class="col-form-label col-sm-2 pt-0 text-lg-end">{{ trans('admin.status') }}</legend>
-              <div class="col-sm-10">
-                <div class="form-check form-switch form-switch-md">
-                 <input class="form-check-input" type="checkbox" name="mode" @if ($sub_categories->mode == 'on') checked="checked" @endif value="on" role="switch">
-               </div>
-              </div>
-            </fieldset><!-- end row -->
+                <fieldset class="row mb-3">
+                  <legend class="col-form-label col-sm-2 pt-0 text-lg-end">{{ trans('admin.status') }}</legend>
+                  <div class="col-sm-10">
+                    <div class="form-check form-switch form-switch-md">
+                     <input class="form-check-input" type="checkbox" name="mode" @if ($sub_categories->mode == 'on') checked="checked" @endif value="on" role="switch">
+                   </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="row mb-3">
+                  <legend class="col-form-label col-sm-2 pt-0 text-lg-end">{{ trans('admin.search') }}</legend>
+                  <div class="col-sm-10">
+                    <div class="form-check form-switch form-switch-md">
+                     <input class="form-check-input" type="checkbox" name="search" @if ($sub_categories->search == 'on') checked="checked" @endif value="on" role="switch">
+                   </div>
+                  </div>
+                </fieldset>
+
+            <!-- end row -->
 
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label text-lg-end">{{ trans('admin.thumbnail') }} ({{trans('general.optional')}})</label>

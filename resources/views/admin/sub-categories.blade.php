@@ -40,6 +40,7 @@
 										 <th class="active">Category Name</th>
 										 <th class="active">{{ trans('admin.slug') }}</th>
                      <th class="active">{{ trans('admin.status') }}</th>
+                     <th class="active">{{ trans('admin.search') }}</th>
                      <th class="active">{{ trans('admin.actions') }}</th>
                    </tr>
 
@@ -48,8 +49,9 @@
                      <td>{{ $scategory->id }}</td>
                      <td>{{ $scategory->name }}</td>
                      <td>{{ $scategory->category->name }}</td>
-										 <td>{{ $scategory->slug }}</td>
-                     <td><span class="badge bg-{{ $scategory->mode == 'on' ? 'success' : 'danger' }}">{{ ucfirst($scategory->mode) }}</span></td>
+					 <td>{{ $scategory->slug }}</td>
+                     <td><a href="{{ route('sub-categories.status.change', $scategory->id) }}" class="badge bg-{{ $scategory->mode == 'on' ? 'success' : 'danger' }}"> {{ ucfirst($scategory->mode) }}</a></td>
+                     <td><a href="{{ route('sub-categories.search.change', $scategory->id) }}" class="badge bg-{{ $scategory->search == 'on' ? 'success' : 'danger' }}"> {{ ucfirst($scategory->search) }}</a></td>
                      <td>
                        <a href="{{ url('panel/admin/sub-categories/edit/').'/'.$scategory->id }}" class="btn btn-success rounded-pill btn-sm me-2">
                          <i class="bi-pencil"></i>

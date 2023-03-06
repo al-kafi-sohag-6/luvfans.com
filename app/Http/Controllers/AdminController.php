@@ -925,6 +925,7 @@ else {
 		$sql->keywords    = $request->keywords;
 		$sql->description = $request->description;
 		$sql->mode        = $request->mode ?? 'off';
+		$sql->search      = $request->search ?? 'off';
 		$sql->image       = $thumbnail;
 		$sql->save();
 
@@ -995,6 +996,7 @@ else {
 		$subcategories->keywords    = $request->keywords;
 		$subcategories->description = $request->description;
 		$subcategories->mode        = $request->mode ?? 'off';
+		$subcategories->search      = $request->search ?? 'off';
 		$subcategories->image       = $thumbnail;
 		$subcategories->save();
 
@@ -1028,22 +1030,32 @@ else {
 		return response()->json($subcategories);
 	}
 
+    //Sub - category Status Change
+    public function statusChangeSub($id){
+        $category   = SubCategories::findOrFail($id);
+        if($category->mode == 'on'){
+            $category->mode = 'off';
+        }else{
+            $category->mode = 'on';
+        }
+        $category->save();
 
+		\Session::flash('success_message', __('general.status_change'));
+		return redirect('panel/admin/sub-categories');
+    }
+    //Sub - category Search Status Change
+    public function searchChangeSub($id){
+        $category   = SubCategories::findOrFail($id);
+        if($category->search == 'on'){
+            $category->search = 'off';
+        }else{
+            $category->search = 'on';
+        }
+        $category->save();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		\Session::flash('success_message', __('general.search_status_change'));
+		return redirect('panel/admin/sub-categories');
+    }
 
 
 	public function posts(Request $request)

@@ -603,6 +603,8 @@ Route::group(['middleware' => 'private.content'], function() {
  	Route::get('panel/admin/sub-categories/edit/{id}',[AdminController::class, 'sub_editCategories']);
  	Route::post('panel/admin/sub-categories/update',[AdminController::class, 'sub_updateCategories']);
  	Route::post('panel/admin/sub-categories/delete/{id}',[AdminController::class, 'sub_deleteCategories']);
+ 	Route::get('panel/admin/sub-categories/status-change/{id}',[AdminController::class, 'statusChangeSub'])->name('sub-categories.status.change');
+ 	Route::get('panel/admin/sub-categories/search-change/{id}',[AdminController::class, 'searchChangeSub'])->name('sub-categories.search.change');
 
 
 	// Posts
