@@ -17,8 +17,8 @@ return array(
 	'my_page'                                    => 'My page',
 	'subtitle_welcome'                           => 'LUVFANS lets you monetize your content. Create a free account and start making money today.',
 	'install_success'                            => 'Installation completed successfully!',
-   
-	// Box #2 On Index   
+
+	// Box #2 On Index
 	'header_box_2'                               => 'Start earning money now!',
 	'desc_box_2'                                 => 'The easiest and most fun method to promote and market your stuff on the Internet!',
 	'card_1'                                     => 'Create a free account',
@@ -27,11 +27,11 @@ return array(
 	'desc_card_2'                                => 'After your ID got verified, you are able to post your content',
 	'card_3'                                     => 'Grow your market',
 	'desc_card_3'                                => 'Start promoting your LUVFANS Page on all other Social networks and earn BIG.',
-   
-// Box #3 On Index   
+
+// Box #3 On Index
 	'header_box_3'                               => 'Create your profile in minutes',
 	'desc_box_3'                                 => 'Joining LUVFANS is totally free. When you sell your content to other members you will keep up to 82% of your revenue. It is up to you how much you want to charge for your subscription.',
-   
+
 	'getting_started' => 'Getting started',
 	'creators_featured' => 'Creators Featured',
 	'desc_creators_featured' => 'The best creators selected by our team.',
@@ -1073,7 +1073,7 @@ return array(
 	    'photo_res_request'                      => '!!! Attention: All images have to be in COLOR, in High Resolution and should not be rotated! Edited or processed images will not be accepted.',
 		'launch_special_h'						 => 'Save the Date!!!',
 	    'launch_special_p'						 => 'We are happy to announce February 15th as our Launching date. Every Creator will be granted a 70% OFF the Platform fee when creating a Free Creator account before this date.',
-	
+
 		// Version 4.0
 		'physical_products' => 'Physical products',
 		'add_physical_product' => 'Add physical product',
@@ -1216,4 +1216,6 @@ return array(
 
 		//Settings page
 		'category_information' => 'Category & Sub-category',
+		'status_change' => 'Status changed successfully',
+		'search_status_change' => 'Search status changed successfully',
 );

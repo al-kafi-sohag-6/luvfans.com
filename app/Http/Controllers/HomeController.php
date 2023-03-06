@@ -657,18 +657,23 @@ class HomeController extends Controller
                     ->take(5)
                     ->get();
 
-             $cat = Categories::where('mode', 'on')
-                                ->where('slug','LIKE', '%'.$query.'%')
-                                ->orWhere('name','LIKE', '%'.$query.'%')
-                                ->take(5)
-                                ->get();
+            $search =  $query;
+            $cat = Categories::where('search', 'on')
+                            ->where(function($query) use ($search) {
+                                $query->where('name', 'like', '%'.$search.'%')
+                                    ->orWhere('slug', 'like', '%'.$search.'%');
+                            })
+                            ->take(5)
+                            ->get();
 
 
-            $sub_cat = SubCategories::where('mode', 'on')
-                                ->where('slug','LIKE', '%'.$query.'%')
-                                ->orWhere('name','LIKE', '%'.$query.'%')
-                                ->take(5)
-                                ->get();
+            $sub_cat = SubCategories::where('search', 'on')
+                                    ->where(function($query) use ($search) {
+                                        $query->where('name', 'like', '%'.$search.'%')
+                                            ->orWhere('slug', 'like', '%'.$search.'%');
+                                    })
+                                    ->take(5)
+                                    ->get();
 
             if($cat){
                 foreach ($cat as $category){

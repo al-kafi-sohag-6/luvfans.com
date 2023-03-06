@@ -741,6 +741,7 @@ else {
 		$sql->keywords    = $request->keywords;
 		$sql->description = $request->description;
 		$sql->mode        = $request->mode ?? 'off';
+		$sql->search      = $request->search ?? 'off';
 		$sql->image       = $thumbnail;
 		$sql->save();
 
@@ -809,6 +810,7 @@ else {
 		$categories->keywords    = $request->keywords;
 		$categories->description = $request->description;
 		$categories->mode   = $request->mode ?? 'off';
+		$categories->search   = $request->search ?? 'off';
 		$categories->image  = $thumbnail;
 		$categories->save();
 
@@ -836,17 +838,32 @@ else {
 			return redirect('panel/admin/categories');
 	}//<--- END METHOD
 
+    //Category Status Change
+    public function statusChange($id){
+        $category   = Categories::findOrFail($id);
+        if($category->mode == 'on'){
+            $category->mode = 'off';
+        }else{
+            $category->mode = 'on';
+        }
+        $category->save();
 
+		\Session::flash('success_message', __('general.status_change'));
+		return redirect('panel/admin/categories');
+    }
+    //Category Search Status Change
+    public function searchChange($id){
+        $category   = Categories::findOrFail($id);
+        if($category->search == 'on'){
+            $category->search = 'off';
+        }else{
+            $category->search = 'on';
+        }
+        $category->save();
 
-
-
-
-
-
-
-
-
-
+		\Session::flash('success_message', __('general.search_status_change'));
+		return redirect('panel/admin/categories');
+    }
 
 
 	// START

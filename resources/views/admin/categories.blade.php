@@ -39,6 +39,7 @@
                      <th class="active">{{ trans('admin.name') }}</th>
 										 <th class="active">{{ trans('admin.slug') }}</th>
                      <th class="active">{{ trans('admin.status') }}</th>
+                     <th class="active">{{ trans('admin.search') }}</th>
                      <th class="active">{{ trans('admin.actions') }}</th>
                    </tr>
 
@@ -46,8 +47,9 @@
                    <tr>
                      <td>{{ $category->id }}</td>
                      <td>{{ $category->name }}</td>
-										 <td>{{ $category->slug }}</td>
-                     <td><span class="badge bg-{{ $category->mode == 'on' ? 'success' : 'danger' }}">{{ ucfirst($category->mode) }}</span></td>
+					 <td>{{ $category->slug }}</td>
+                     <td><a href="{{ route('categories.status.change', $category->id) }}" class="badge bg-{{ $category->mode == 'on' ? 'success' : 'danger' }}"> {{ ucfirst($category->mode) }}</a></td>
+                     <td><a href="{{ route('categories.search.change', $category->id) }}" class="badge bg-{{ $category->search == 'on' ? 'success' : 'danger' }}"> {{ ucfirst($category->search) }}</a></td>
                      <td>
                        <a href="{{ url('panel/admin/categories/edit/').'/'.$category->id }}" class="btn btn-success rounded-pill btn-sm me-2">
                          <i class="bi-pencil"></i>

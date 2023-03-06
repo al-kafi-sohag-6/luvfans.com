@@ -121,8 +121,8 @@ return array(
     'min_width_height_image'               => 'Min width height photo',
     'facebook_login'                       => 'Facebook login',
 		'google_login'                     => 'Google login',
-   
-	//Reasons reporting   
+
+	//Reasons reporting
 		'copyright'                        => 'Copyright infringement',
     'privacy_issue'                        => 'Privacy issue',
     'violent_sexual_content'               => 'Violent or sexual content',
@@ -214,4 +214,5 @@ return array(
 		'blog_deleted'                     => 'Blog Deleted!',
 		'minimum_width_img_blog'           => 'Minimum width 650x430',
 	    'additional_info'                  => 'Additional Personal Info',
+	    'search'                           => 'Search',
 );
