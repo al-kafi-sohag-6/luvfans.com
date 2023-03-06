@@ -848,6 +848,7 @@ else {
         }
         $category->save();
 
+
 		\Session::flash('success_message', __('general.status_change'));
 		return redirect('panel/admin/categories');
     }
@@ -877,7 +878,7 @@ else {
 
 	public function sub_AddCategories()
 	{
-		$categories      = Categories::orderBy('name')->get();
+		$categories      = Categories::orderBy('name')->where('mode', 'on')->get();
 		return view('admin.add-sub-categories', compact('categories'));
 	}//<--- END METHOD
 
@@ -938,7 +939,7 @@ else {
 	public function sub_editCategories($id) {
 
 		$sub_categories = SubCategories::find($id);
-		$categories     = Categories::orderBy('name')->get();
+		$categories     = Categories::orderBy('name')->where('mode', 'on')->get();
 
 		return view('admin.edit-sub-categories',compact('sub_categories', 'categories'));
 

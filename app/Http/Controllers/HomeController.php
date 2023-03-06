@@ -421,18 +421,17 @@ class HomeController extends Controller
     public function category($slug, $subcategory = false, $type = false)
     {
       $data = [];
+      $category = Categories::where('slug', $slug)->where('mode','on')->firstOrFail();
+      $title    = \Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name;
 
       if($subcategory == 'featured' || $subcategory == 'more-active' || $subcategory == 'new' || $subcategory == 'free'){
         $type = $subcategory;
-        $category = Categories::where('slug', $slug)->where('mode','on')->firstOrFail();
         $subcategory = false;
       }elseif($subcategory != false){
-        $category = Categories::where('slug', $slug)->firstOrFail();
         $subcategory = SubCategories::where('slug', $subcategory)->where('mode','on')->firstOrFail();
         $isSubCategory = true;
       }
 
-      $title    = \Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name;
 
       $users =  UserCategory::with(['user'])->where('category_id', $category->id);
       if($subcategory){
@@ -661,6 +660,7 @@ class HomeController extends Controller
 
             $search =  $query;
             $cat = Categories::where('search', 'on')
+                            ->where('mode', 'on')
                             ->where(function($query) use ($search) {
                                 $query->where('name', 'like', '%'.$search.'%')
                                     ->orWhere('slug', 'like', '%'.$search.'%');
@@ -669,10 +669,14 @@ class HomeController extends Controller
                             ->get();
 
 
-            $sub_cat = SubCategories::where('search', 'on')
+            $sub_cat = SubCategories::where('search', 'on')->where('mode', 'on')
+                                    ->whereHas('category', function($query) {
+                                        $query->where('categories.mode', '=', 'on')
+                                              ->where('categories.search', '=', 'on');
+                                    })
                                     ->where(function($query) use ($search) {
-                                        $query->where('name', 'like', '%'.$search.'%')
-                                            ->orWhere('slug', 'like', '%'.$search.'%');
+                                        $query->where('sub_categories.name', 'like', '%'.$search.'%')
+                                            ->orWhere('sub_categories.slug', 'like', '%'.$search.'%');
                                     })
                                     ->take(5)
                                     ->get();
