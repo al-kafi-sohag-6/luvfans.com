@@ -1218,4 +1218,7 @@ return array(
 		'category_information' => 'Category & Sub-category',
 		'status_change' => 'Status changed successfully',
 		'search_status_change' => 'Search status changed successfully',
+
+        //Theme page
+		'category_default' => 'Category Default',
 );

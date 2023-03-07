@@ -701,35 +701,39 @@ class AdminController extends Controller
 	public function storeCategories(Request $request) {
 
 		$temp            = 'public/temp/'; // Temp
-	  $path            = 'public/img-category/'; // Path General
+	    $path            = 'public/img-category/'; // Path General
+        $default         = 'public/img/'; //Default Image path
 
 		Validator::extend('ascii_only', function($attribute, $value, $parameters){
     		return !preg_match('/[^x00-x7F\-]/i', $value);
 		});
 
 		$rules = array(
-          'name'        => 'required',
+            'name'        => 'required',
 	        'slug'        => 'required|ascii_only|unique:categories',
-	        'thumbnail'   => 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
+	        'thumbnail'   => $this->settings->category_default ? 'nullable' : 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
         );
 
 		$this->validate($request, $rules);
 
 		if( $request->hasFile('thumbnail') ) {
 
-		$extension       = $request->file('thumbnail')->getClientOriginalExtension();
-		$type_mime_image = $request->file('thumbnail')->getMimeType();
-		$sizeFile        = $request->file('thumbnail')->getSize();
-		$thumbnail       = $request->slug.'-'.Str::random(32).'.'.$extension;
+            $extension       = $request->file('thumbnail')->getClientOriginalExtension();
+            $type_mime_image = $request->file('thumbnail')->getMimeType();
+            $sizeFile        = $request->file('thumbnail')->getSize();
+            $thumbnail       = $request->slug.'-'.Str::random(32).'.'.$extension;
 
-		if( $request->file('thumbnail')->move($temp, $thumbnail) ) {
+            if( $request->file('thumbnail')->move($temp, $thumbnail) ) {
 
-			$image = Image::make($temp.$thumbnail);
+                $image = Image::make($temp.$thumbnail);
 
-			\File::copy($temp.$thumbnail, $path.$thumbnail);
-			\File::delete($temp.$thumbnail);
-			}// End File
-		} // HasFile
+                \File::copy($temp.$thumbnail, $path.$thumbnail);
+                \File::delete($temp.$thumbnail);
+            }// End File
+		}elseif($this->settings->category_default){
+            \File::copy($default.$this->settings->category_default, $path.$this->settings->category_default);
+            $thumbnail = $this->settings->category_default;
+        }
 
 else {
 	$thumbnail = '';
@@ -1472,6 +1476,26 @@ else {
 			$this->settings->cover_default = $file;
 			$this->settings->save();
 		} // HasFile
+
+
+
+		//======== Default Category
+		if($request->hasFile('category_default')){
+
+            $extension  = $request->file('category_default')->getClientOriginalExtension();
+            $file       = 'category_default-'.time().'.'.$extension;
+
+            if ($request->file('category_default')->move($temp, $file)) {
+                \File::copy($temp.$file, $path.$file);
+                \File::delete($temp.$file);
+                // Delete old
+                \File::delete($path.$this->settings->category_default);
+                }// End File
+
+                $this->settings->category_default = $file;
+                $this->settings->save();
+
+        } // HasFile
 
 		// Update Color Default, and Button style
 		$this->settings->whereId(1)

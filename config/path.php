@@ -31,4 +31,9 @@ return array(
 
     // Stories
     'stories' => 'uploads/stories/',
+
+    //Category & sub-category
+    'category' => 'img-category/',
+    'category_default' => 'img/',
+
 );
