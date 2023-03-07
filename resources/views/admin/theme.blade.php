@@ -216,6 +216,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-4">
+                            <label class="col-sm-2 col-form-label text-lg-end">{{ __('general.sub_category_default') }}</label>
+                            <div class="col-lg-5 col-sm-10">
+                                <div class="d-block mb-2">
+                                    <div style="max-width: 150px; height: 150px; margin-bottom: 10px; display: block; border-radius: 6px; background: #505050 @if ($settings->sub_category_default) url('{{ Helper::getFile(config('path.sub_category_default').$settings->sub_category_default) }}') no-repeat center center; background-size: cover; @endif ;">
+                                    </div>
+
+                                    <div class="input-group mb-1">
+                                        <input name="sub_category_default" type="file" class="form-control custom-file rounded-pill">
+                                    </div>
+                                    <small class="d-block">{{ __('general.recommended_size') }} 30x30 px</small>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <div class="row mb-3">

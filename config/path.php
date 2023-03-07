@@ -35,5 +35,7 @@ return array(
     //Category & sub-category
     'category' => 'img-category/',
     'category_default' => 'img/',
+    'sub_category' => 'img-sub-category/',
+    'sub_category_default' => 'img/',
 
 );

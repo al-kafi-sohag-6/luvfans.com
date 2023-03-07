@@ -1220,5 +1220,6 @@ return array(
 		'search_status_change' => 'Search status changed successfully',
 
         //Theme page
-		'category_default' => 'Category Default',
+		'category_default' => 'Default Category',
+		'sub_category_default' => 'Default Sub-category',
 );

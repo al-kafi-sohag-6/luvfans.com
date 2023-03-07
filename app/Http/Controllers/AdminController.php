@@ -733,11 +733,9 @@ class AdminController extends Controller
 		}elseif($this->settings->category_default){
             \File::copy($default.$this->settings->category_default, $path.$this->settings->category_default);
             $thumbnail = $this->settings->category_default;
+        }else {
+	        $thumbnail = '';
         }
-
-else {
-	$thumbnail = '';
-}
 
 		$sql              = New Categories;
 		$sql->name        = $request->name;
@@ -890,6 +888,7 @@ else {
 
 		$temp            = 'public/temp/'; // Temp
 	  	$path            = 'public/img-sub-category/'; // Path General
+        $default         = 'public/img/'; //Default Image path
 
 		Validator::extend('ascii_only', function($attribute, $value, $parameters){
     		return !preg_match('/[^x00-x7F\-]/i', $value);
@@ -898,7 +897,7 @@ else {
 		$rules = array(
           'name'        => 'required',
 	      'slug'        => 'required|ascii_only|unique:sub_categories,slug',
-	      'thumbnail'   => 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
+          'thumbnail'   => $this->settings->sub_category_default ? 'nullable' : 'required|mimes:jpg,gif,png,jpe,jpeg|dimensions:min_width=30,min_height=30',
         );
 
 		$this->validate($request, $rules);
@@ -917,11 +916,12 @@ else {
 			\File::copy($temp.$thumbnail, $path.$thumbnail);
 			\File::delete($temp.$thumbnail);
 			}// End File
-		} // HasFile
-
-else {
-	$thumbnail = '';
-}
+		}elseif($this->settings->sub_category_default){
+            \File::copy($default.$this->settings->sub_category_default, $path.$this->settings->sub_category_default);
+            $thumbnail = $this->settings->sub_category_default;
+        }else {
+	        $thumbnail = '';
+        }
 
 		$sql              = New SubCategories;
 		$sql->name        = $request->name;
@@ -1493,6 +1493,24 @@ else {
                 }// End File
 
                 $this->settings->category_default = $file;
+                $this->settings->save();
+
+        } // HasFile
+
+		//======== Default Sub Category
+		if($request->hasFile('sub_category_default')){
+
+            $extension  = $request->file('sub_category_default')->getClientOriginalExtension();
+            $file       = 'sub_category_default-'.time().'.'.$extension;
+
+            if ($request->file('sub_category_default')->move($temp, $file)) {
+                \File::copy($temp.$file, $path.$file);
+                \File::delete($temp.$file);
+                // Delete old
+                \File::delete($path.$this->settings->sub_category_default);
+                }// End File
+
+                $this->settings->sub_category_default = $file;
                 $this->settings->save();
 
         } // HasFile
