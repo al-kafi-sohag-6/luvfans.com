@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\RestrictedWord;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class RestrictionsController extends Controller
 {
@@ -34,7 +35,7 @@ class RestrictionsController extends Controller
         foreach($posts as $post){
             if($post != '' && $post != ';'){
                 $save_p = new RestrictedWord;
-                $save_p->word = $post;
+                $save_p->word = Str::of($post)->ltrim();
                 $save_p->type = 'post';
                 $save_p->save();
             }
