@@ -28,6 +28,7 @@ use App\Helper;
 use Image;
 use Form;
 use Mail;
+use App\Rules\RestrictedWordRule;
 
 class UpdatesController extends Controller
 {
@@ -88,10 +89,11 @@ class UpdatesController extends Controller
 
     $validator = Validator::make($input, [
       'zip'         => 'mimes:zip|max:'.$this->settings->file_size_allowed.'',
-      'description' => 'required|min:1|max:'.$this->settings->update_length.'',
+      'description' => ['required','min:1', 'max:'.$this->settings->update_length.'', new RestrictedWordRule('post')],
       '_description'=> 'required_if:_isVideoEmbed,==,yes|min:1|max:'.$this->settings->update_length.'',
       'title'       => 'max:100',
       'price'       => 'numeric|min:'.$this->settings->min_ppv_amount.'|max:'.$this->settings->max_ppv_amount,
+
     ], $messages);
 
      if ($validator->fails()) {
@@ -914,11 +916,11 @@ class UpdatesController extends Controller
       {
         $post = Updates::findOrFail($id);
         $userIP = request()->ip();
-        
+
         if (auth()->check()) {
           // Check if the registered user has already seen the video
           $viewCheckUser = $post->videoViews()->whereUserId(auth()->id())->first();
-  
+
           if (! $viewCheckUser && auth()->id() != $post->user()->id) {
             $view = new VideoViews();
             $view->updates_id = $post->id;
@@ -934,7 +936,7 @@ class UpdatesController extends Controller
           $viewCheckGuest = $post->videoViews()->whereUserId(0)
           ->whereIp($userIP)
           ->first();
-    
+
           if (! $viewCheckGuest) {
             $view = new VideoViews();
             $view->updates_id = $post->id;

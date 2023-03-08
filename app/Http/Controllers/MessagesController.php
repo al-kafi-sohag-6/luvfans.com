@@ -20,6 +20,7 @@ use App\Jobs\EncodeVideoMessages;
 use App\Http\Controllers\Traits\PushNotificationTrait;
 use Image;
 use Cache;
+use App\Rules\RestrictedWordRule;
 
 class MessagesController extends Controller
 {
@@ -264,9 +265,9 @@ class MessagesController extends Controller
 
       // Setup the validator
 			$rules = [
-				'message'=> 'required|min:1|max:'.$settings->comment_length.'',
-        'zip'    => 'mimes:zip|max:'.$settings->file_size_allowed.'',
-        'price'  => 'numeric|min:'.$settings->min_ppv_amount.'|max:'.$settings->max_ppv_amount,
+				'message'=> ['required', 'min:1', 'max:'.$settings->comment_length.'', new RestrictedWordRule('message')],
+                'zip'    => 'mimes:zip|max:'.$settings->file_size_allowed.'',
+                'price'  => 'numeric|min:'.$settings->min_ppv_amount.'|max:'.$settings->max_ppv_amount,
           ];
 
 			$validator = Validator::make($request->all(), $rules, $messages);
@@ -380,7 +381,7 @@ class MessagesController extends Controller
         $getPushNotificationDevices = $user->oneSignalDevices->pluck('player_id')->all();
 
         if ($settings->push_notification_status && $getPushNotificationDevices && $diffInMinutes > 10 && $diffInMinutes < 1000) {
-          
+
           app()->setLocale($user->language);
 
           $messagePush = __('general.new_msg_from').' @'.auth()->user()->username;

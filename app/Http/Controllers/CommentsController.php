@@ -15,6 +15,7 @@ use App\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\RestrictedWordRule;
 
 class CommentsController extends Controller
 {
@@ -35,7 +36,7 @@ class CommentsController extends Controller
 		];
 
 			return Validator::make($data, [
-	        	'comment' =>  'required|max:'.$this->settings->comment_length.'|min:2',
+	        	'comment' =>  ['required','max:'.$this->settings->comment_length.'', 'min:2', new RestrictedWordRule('comment')],
 	        ], $messages);
 
     }
@@ -87,8 +88,8 @@ class CommentsController extends Controller
 				$wrapCommentsClose = null;
 				$modelEditCommentReply = '#modalEditReply'.$sql->id;
 				$modal = view('includes.modal-edit-comment', [
-					'data' => $sql, 
-					'isReply' => true, 
+					'data' => $sql,
+					'isReply' => true,
 					'modalId' => 'modalEditReply'.$sql->id
 				]);
 		} else {
@@ -107,8 +108,8 @@ class CommentsController extends Controller
 			$wrapCommentsClose = '</div>';
 			$modelEditCommentReply = '#modalEditComment'.$sql->id;
 			$modal = view('includes.modal-edit-comment', [
-				'data' => $sql, 
-				'isReply' => false, 
+				'data' => $sql,
+				'isReply' => false,
 				'modalId' => 'modalEditComment'.$sql->id
 			]);
 		}
@@ -125,7 +126,7 @@ class CommentsController extends Controller
 		$verifiedId = auth()->user()->verified_id == 'yes' ? '<small class="verified"> <i class="bi bi-patch-check-fill"></i> </small>' : null;
 
 		$totalComments = $update->totalComments();
-		
+
 		// Send Notification Mention
 		Helper::sendNotificationMention($sql->reply, $request->update_id);
 
