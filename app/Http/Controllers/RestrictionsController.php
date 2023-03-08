@@ -27,9 +27,9 @@ class RestrictionsController extends Controller
     public function saveRestrictions(Request $request){
         RestrictedWord::truncate();
 
-        $posts = explode("; ", $request->post_restrictions);
-        $comments = explode("; ", $request->comment_restriction);
-        $messages = explode("; ", $request->message_restriction);
+        $posts = explode(";", $request->post_restrictions);
+        $comments = explode(";", $request->comment_restriction);
+        $messages = explode(";", $request->message_restriction);
 
         foreach($posts as $post){
             if($post != '' && $post != ';'){
