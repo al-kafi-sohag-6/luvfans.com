@@ -43,6 +43,7 @@ use App\Http\Controllers\PushNotificationsController;
 use App\Http\Controllers\RepliesController;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\UploadMediaStoryController;
+use App\Http\Controllers\RestrictionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +66,7 @@ use App\Http\Controllers\UploadMediaStoryController;
  Route::get('migrate', function () {
 
 	/* php artisan migrate */
-    \Artisan::call('migrate --path=/database/migrations/2023_02_15_111705_create_sub_category_table.php');
+    \Artisan::call('migrate --path=/database/migrations/2023_03_08_115257_create_restricted_words_table.php');
     dd("Done");
 });
 
@@ -509,6 +510,10 @@ Route::group(['middleware' => 'private.content'], function() {
 	// Limits
 	Route::get('panel/admin/settings/limits',[AdminController::class, 'settingsLimits'])->name('general');
 	Route::post('panel/admin/settings/limits',[AdminController::class, 'saveSettingsLimits']);
+
+    //Restrictions
+	Route::get('panel/admin/settings/restrictions',[RestrictionsController::class, 'settingsRestrictions'])->name('setting.restrictions');
+	Route::post('panel/admin/settings/restrictions',[RestrictionsController::class, 'saveRestrictions'])->name('setting.restrictions');
 
 	// BILLING
 	Route::view('panel/admin/billing','admin.billing')->name('billing');

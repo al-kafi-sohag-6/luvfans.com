@@ -1222,4 +1222,10 @@ return array(
         //Theme page
 		'category_default' => 'Default Category',
 		'sub_category_default' => 'Default Sub-category',
+
+        //Restrictions
+        'post_restriction'    => 'Restricted word\'s for post',
+        'comment_restriction' => 'Restricted word\'s for comment',
+        'message_restriction' => 'Restricted word\'s for message',
+        'restriction_notice'  => 'Use \';\' to separate words or press \'Enter\'',
 );

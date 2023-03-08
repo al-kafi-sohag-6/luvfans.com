@@ -215,4 +215,7 @@ return array(
 		'minimum_width_img_blog'           => 'Minimum width 650x430',
 	    'additional_info'                  => 'Additional Personal Info',
 	    'search'                           => 'Search',
+
+        //Restriction
+        'restrictions'                     => 'Restrictions',
 );
