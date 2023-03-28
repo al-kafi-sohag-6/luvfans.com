@@ -8,6 +8,8 @@
 
     <title>{{ __('admin.admin') }}</title>
 
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.13.4/af-2.5.3/b-2.3.6/b-colvis-2.3.6/b-html5-2.3.6/b-print-2.3.6/cr-1.6.2/date-1.4.0/fc-4.2.2/fh-3.3.2/kt-2.8.2/r-2.4.1/rg-1.3.1/rr-1.3.3/sc-2.1.1/sb-1.4.1/sp-2.1.2/sl-1.6.2/sr-1.2.2/datatables.min.css" rel="stylesheet"/>
+
     @include('includes.css_admin')
 
     <script type="text/javascript">
@@ -18,10 +20,8 @@
         var yes = "{{trans('general.yes')}}";
         var cancel_confirm = "{{trans('general.cancel_confirm')}}";
         var timezone = "{{config('app.timezone')}}";
-        var add_tag = "{{ trans("
-        general.add_tag ") }}";
-        var choose_image = '{{trans('
-        general.choose_image ')}}';
+        var add_tag = "{{ trans("general.add_tag ") }}";
+        var choose_image = '{{trans('general.choose_image ')}}';
         var formats_available = "{{ trans('general.formats_available_verification_form_w9', ['formats' => 'JPG, PNG, GIF, SVG']) }}";
         var cancel_payment = "{!!trans('general.confirm_cancel_payment')!!}";
         var yes_cancel_payment = "{{trans('general.yes_cancel_payment')}}";
@@ -41,6 +41,11 @@
     <style>
         :root {
             --color-default: #000000;
+        }
+
+        /* DataTable */
+        .dt-buttons .dropdown-toggle::after {
+            margin-top: 4% !important;
         }
 
     </style>
@@ -522,6 +527,9 @@
     <script src="{{ asset('public/js/ckeditor/ckeditor.js')}}"></script>
     <script src="{{ asset('public/js/select2/select2.full.min.js') }}"></script>
     <script src="{{ asset('public/admin/admin-functions.js') }}?v={{$settings->version}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.13.4/af-2.5.3/b-2.3.6/b-colvis-2.3.6/b-html5-2.3.6/b-print-2.3.6/cr-1.6.2/date-1.4.0/fc-4.2.2/fh-3.3.2/kt-2.8.2/r-2.4.1/rg-1.3.1/rr-1.3.3/sc-2.1.1/sb-1.4.1/sp-2.1.2/sl-1.6.2/sr-1.2.2/datatables.min.js"></script>
 
     @yield('javascript')
 

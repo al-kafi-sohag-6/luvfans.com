@@ -38,9 +38,9 @@
 			@endif
 			</ul>
 
-			<p class="m-0 py-3 text-muted card-text text-truncate">
-				{{ Str::limit($response->story, 100, '...') }}
-			</p>
+			<div class="m-0 py-3 text-muted card-text text-truncate">
+				{{ Str::limit(strip_tags($response->story), 100, '...') }}
+            </div>
 			<a href="{{url($response->username)}}" class="btn btn-1 btn-sm btn-outline-primary">{{trans('general.go_to_page')}}</a>
 
 			<a href="{{url($response->username)}}" class="btn btn-1 btn-sm btn-outline-primary px-3 active">

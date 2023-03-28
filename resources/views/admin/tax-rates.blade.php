@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
 @section('content')
-	<h5 class="mb-4 fw-light">
+<h5 class="mb-4 fw-light">
     <a class="text-reset" href="{{ url('panel/admin') }}">{{ __('admin.dashboard') }}</a>
       <i class="bi-chevron-right me-1 fs-6"></i>
       <span class="text-muted">{{ __('general.tax_rates') }}</span>
@@ -30,8 +30,8 @@
 				<div class="card-body p-lg-4">
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 
 							@if ($taxes->count() !=  0)
 								 <tr>
@@ -41,7 +41,8 @@
 										<th class="active">{{ trans('admin.status') }}</th>
 										<th class="active">{{ trans('admin.actions') }}</th>
 									</tr>
-
+                         </thead>
+                         <tbody
 								@foreach ($taxes as $tax)
 									<tr>
 										<td>{{ $tax->name }}</td>
@@ -73,4 +74,34 @@
 
 	</div><!-- end row -->
 </div><!-- end content -->
+
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('general.tax_rates') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3]
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

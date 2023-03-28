@@ -6,7 +6,7 @@
       <i class="bi-chevron-right me-1 fs-6"></i>
       <span class="text-muted">{{ __('general.stories') }}</span>
       <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">{{ __('general.backgrounds') }} ({{$data->total()}})</span>
+      <span class="text-muted">{{ __('general.backgrounds') }} ({{$data->count()}})</span>
 
 			<a href="javascript:void(0);" id="btnFileAddBg" class="btn btn-sm btn-dark float-lg-end mt-1 mt-lg-0">
 				<i class="bi-plus-lg"></i> {{ trans('general.add_new') }}
@@ -44,16 +44,16 @@
            </div>
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 
-               @if ($data->count() !=  0)
                   <tr>
                      <th class="active">ID</th>
                      <th class="active">{{ trans('general.image') }}</th>
                      <th class="active">{{ trans('admin.actions') }}</th>
                    </tr>
-
+                         </thead>
+                         <tbody>
                  @foreach ($data as $background)
                    <tr>
                      <td>{{ $background->id }}</td>
@@ -70,22 +70,44 @@
                    </tr><!-- /.TR -->
                    @endforeach
 
-									@else
-										<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-									@endif
-
 								</tbody>
 								</table>
 							</div><!-- /.box-body -->
 
 				 </div><!-- card-body -->
  			</div><!-- card  -->
-
-       @if ($data->lastPage() > 1)
-       {{ $data->onEachSide(0)->links() }}
-     @endif
  		</div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('general.backgrounds') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1,]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('general.backgrounds') }}',
+                    exportOptions: {
+                        columns: [0, 1]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

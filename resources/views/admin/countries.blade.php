@@ -30,10 +30,8 @@
 				<div class="card-body p-lg-4">
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
-
-							@if ($countries->count() !=  0)
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 								 <tr>
 									  <th class="active">ID</th>
 										<th class="active">{{ trans('general.iso_code') }}</th>
@@ -41,6 +39,9 @@
 										<th class="active">{{ trans('admin.actions') }}</th>
 									</tr>
 
+                         </thead>
+                                @if ($countries->count() !=  0)
+                                <tbody>
 								@foreach ($countries as $country)
 									<tr>
 										<td>{{ $country->id }}</td>
@@ -64,22 +65,50 @@
 										</td>
 
 									</tr><!-- /.TR -->
-									@endforeach
-
-									@else
-										<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-									@endif
-
+								@endforeach
 								</tbody>
+
+								{{-- @else
+									<tr><td colspan="4" class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</td></tr> --}}
+								@endif
+
 								</table>
 							</div><!-- /.box-body -->
 
 				 </div><!-- card-body -->
  			</div><!-- card  -->
-
-			{{ $countries->links() }}
  		</div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('general.countries') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('general.countries') }}',
+                    exportOptions: {
+                        columns: [0, 1, 2]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

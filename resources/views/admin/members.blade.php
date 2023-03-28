@@ -4,7 +4,7 @@
 	<h5 class="mb-4 fw-light">
     <a class="text-reset" href="{{ url('panel/admin') }}">{{ __('admin.dashboard') }}</a>
       <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">{{ __('admin.members') }} ({{$data->total()}})</span>
+      <span class="text-muted">{{ __('admin.members') }} ({{$data->count()}})</span>
   </h5>
 
 <div class="content">
@@ -35,7 +35,6 @@
 			<div class="card shadow-custom border-0">
 				<div class="card-body p-lg-4">
 
-          @if ($data->count() != 0)
 						<div class="d-lg-flex justify-content-lg-between align-items-center mb-2 w-100">
 
 							<form action="{{ url('panel/admin/members') }}" id="formSort" method="get">
@@ -56,13 +55,11 @@
           </form><!-- form -->
 				</div>
 
-            @endif
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 
-               @if ($data->total() !=  0 && $data->count() != 0)
                   <tr>
                      <th class="active">ID</th>
 										 <th class="active">{{ trans('auth.full_name') }}</th>
@@ -76,7 +73,8 @@
 										 <th class="active">{{ trans('admin.status') }}</th>
 										 <th class="active">{{ trans('admin.actions') }}</th>
                    </tr>
-
+                         </thead>
+                         <tbody>
                  @foreach ($data as $user)
                    <tr>
                      <td>{{ $user->id }}</td>
@@ -159,17 +157,6 @@
                    </tr><!-- /.TR -->
                    @endforeach
 
-									@else
-										<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}
-
-                      @if (isset($query))
-                        <div class="d-block w-100 mt-2">
-                          <a href="{{url('panel/admin/members')}}"><i class="bi-arrow-left me-1"></i> {{ trans('auth.back') }}</a>
-                        </div>
-                      @endif
-                    </h5>
-									@endif
-
 								</tbody>
 								</table>
 							</div><!-- /.box-body -->
@@ -177,11 +164,38 @@
 				 </div><!-- card-body -->
  			</div><!-- card  -->
 
-			@if ($data->lastPage() > 1)
-			{{ $data->appends(['q' => $query, 'sort' => $sort])->onEachSide(0)->links() }}
-		@endif
  		</div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('admin.members') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('admin.members') }}',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

@@ -35,7 +35,7 @@ class RestrictedWordRule implements Rule
 
         $restrictedWords = RestrictedWord::where('type', $this->type)->pluck('word')->toArray();
         foreach ($restrictedWords as $restrictedWord) {
-            if (stripos($value, $restrictedWord) !== false) {
+            if (stripos(strip_tags($value), $restrictedWord) !== false) {
                 $this->failedWord = $restrictedWord;
                 return false;
             }

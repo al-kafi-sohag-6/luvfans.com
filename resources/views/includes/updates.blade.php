@@ -1,5 +1,4 @@
 @foreach ($updates as $response)
-
 	@php
 		if (auth()->check()) {
 			$checkUserSubscription = auth()->user()->checkSubscription($response->user());
@@ -48,7 +47,7 @@
 			}
 		}
 		$nth = 0; // nth foreach nth-child(3n-1)
-		
+
 	@endphp
 	<div class="card mb-3 card-updates views rounded-large shadow-large card-border-0 @if ($response->status == 'pending') post-pending @endif @if ($response->fixed_post == '1' && request()->path() == $response->user()->username || auth()->check() && $response->fixed_post == '1' && $response->user()->id == auth()->user()->id) pinned-post @endif" data="{{$response->id}}">
 	<div class="card-body">
@@ -109,7 +108,7 @@
 
 					<button class="dropdown-item mb-1" onclick="$('#url{{$response->id}}').trigger('click')"><i class="feather icon-link mr-2"></i> {{trans('general.copy_link')}}</button>
 
-					<button type="button" class="dropdown-item mb-1" data-toggle="modal" data-target="#editPost{{$response->id}}">
+					<button type="button" class="dropdown-item mb-1" onclick="editModal({{$response->id}}, '{{ route('ajax.post.info', $response->id) }}' )">
 						<i class="bi bi-pencil mr-2"></i> {{trans('general.edit_post')}}
 					</button>
 
@@ -126,97 +125,6 @@
 					{!! Form::button('<i class="feather icon-trash-2 mr-2"></i> '.trans('general.delete_post'), ['class' => 'dropdown-item mb-1 actionDelete']) !!}
 					{!! Form::close() !!}
 	      </div>
-
-				<div class="modal fade modalEditPost" id="editPost{{$response->id}}" tabindex="-1" role="dialog" aria-hidden="true">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header border-bottom-0">
-							<h5 class="modal-title">{{trans('general.edit_post')}}</h5>
-							<button type="button" class="close close-inherit" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">
-									<i class="bi bi-x-lg"></i>
-								</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<form method="POST" action="{{url('update/edit')}}" enctype="multipart/form-data" class="formUpdateEdit">
-								@csrf
-								<input type="hidden" name="id" value="{{$response->id}}" />
-							<div class="card mb-4">
-								<div class="blocked display-none"></div>
-								<div class="card-body pb-0">
-
-									<div class="media">
-										<div class="media-body">
-										<textarea name="description" rows="{{ mb_strlen($response->description) >= 500 ? 10 : 5 }}" cols="40" placeholder="{{trans('general.write_something')}}" class="form-control border-0 updateDescription custom-scrollbar">{{$response->description}}</textarea>
-									</div>
-								</div><!-- media -->
-
-										<input class="custom-control-input d-none customCheckLocked" type="checkbox" {{$response->locked == 'yes' ? 'checked' : ''}}  name="locked" value="yes">
-
-										<!-- Alert -->
-										<div class="alert alert-danger my-3 display-none errorUdpate">
-										 <ul class="list-unstyled m-0 showErrorsUdpate small"></ul>
-									 </div><!-- Alert -->
-
-								</div><!-- card-body -->
-
-								<div class="card-footer bg-white border-0 pt-0">
-									<div class="justify-content-between align-items-center">
-
-										<div class="form-group @if ($response->price == 0.00) display-none @endif price">
-											<div class="input-group mb-2">
-											<div class="input-group-prepend">
-												<span class="input-group-text">{{$settings->currency_symbol}}</span>
-											</div>
-													<input class="form-control isNumber" value="{{$response->price != 0.00 ? $response->price : null}}" autocomplete="off" name="price" placeholder="{{trans('general.price')}}" type="text">
-											</div>
-										</div><!-- End form-group -->
-
-										@if ($mediaCount == 0 && $response->locked == 'yes')
-										<div class="form-group @if (! $response->title) display-none @endif titlePost">
-											<div class="input-group mb-2">
-											<div class="input-group-prepend">
-												<span class="input-group-text"><i class="bi-type"></i></span>
-											</div>
-													<input class="form-control @if ($response->title) active @endif" value="{{$response->title ? $response->title : null}}" maxlength="100" autocomplete="off" name="title" placeholder="{{trans('admin.title')}}" type="text">
-											</div>
-											<small class="form-text text-muted mb-4 font-13">
-				                {{ __('general.title_post_info', ['numbers' => 100]) }}
-				              </small>
-										</div><!-- End form-group -->
-									@endif
-
-										@if ($response->price == 0.00)
-										<button type="button" class="btn btn-upload btn-tooltip e-none align-bottom setPrice @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill" data-toggle="tooltip" data-placement="top" title="{{trans('general.price_post_ppv')}}">
-											<i class="feather icon-tag f-size-25"></i>
-										</button>
-									@endif
-
-									@if ($response->price == 0.00)
-										<button type="button" class="contentLocked btn e-none align-bottom @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill btn-upload btn-tooltip {{$response->locked == 'yes' ? '' : 'unlock'}}" data-toggle="tooltip" data-placement="top" title="{{trans('users.locked_content')}}">
-											<i class="feather icon-{{$response->locked == 'yes' ? '' : 'un'}}lock f-size-25"></i>
-										</button>
-									@endif
-
-								@if ($mediaCount == 0 && $response->locked == 'yes')
-									<button type="button" class="btn btn-upload btn-tooltip e-none align-bottom @if ($response->title) btn-active-hover @endif setTitle @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill" data-toggle="tooltip" data-placement="top" title="{{trans('general.title_post_block')}}">
-										<i class="bi-type f-size-25"></i>
-									</button>
-								@endif
-
-										<div class="d-inline-block float-right mt-3">
-											<button type="submit" class="btn btn-sm btn-primary rounded-pill float-right btnEditUpdate"><i></i> {{trans('users.save')}}</button>
-										</div>
-
-									</div>
-								</div><!-- card footer -->
-							</div><!-- card -->
-						</form>
-					</div><!-- modal-body -->
-					</div><!-- modal-content -->
-				</div><!-- modal-dialog -->
-			</div><!-- modal -->
 			@endif
 
 				@if(auth()->check()
@@ -358,17 +266,18 @@
 	|| $response->locked == 'no'
 	)
 	<div class="card-body pt-0 pb-3">
-		<p class="mb-0 update-text position-relative text-word-break">
-			{!! Helper::linkText(Helper::checkText($response->description, $isVideoEmbed ?? null)) !!}
-		</p>
+		<div class="mb-0 update-text position-relative text-word-break">
+			{!! $response->description !!}
+            {{-- {!! Helper::linkText(Helper::checkText($response->description, $isVideoEmbed ?? null)) !!} --}}
+        </div>
 	</div>
 
 @else
 	@if ($response->title)
 	<div class="card-body pt-0 pb-3">
-		<p class="mb-0 update-text position-relative text-word-break font-weight-bold">
+		<div class="mb-0 update-text position-relative text-word-break font-weight-bold">
 			{!! Helper::linkText($response->title) !!}
-		</p>
+		</div>
 	</div>
 	@endif
 @endif
@@ -642,7 +551,7 @@
 		<div class="w-100 mb-3 containerLikeComment">
 			<span class="countLikes text-muted dot-item">
 				{{ trans_choice('general.like_likes', $totalLikes, ['total' => number_format($totalLikes)]) }}
-			</span> 
+			</span>
 			<span class="text-muted totalComments dot-item @auth @if (! isset($inPostDetail) && $buttonLike)toggleComments @endif @endauth">
 				{{ trans_choice('general.comment_comments', $totalComments, ['total' => number_format($totalComments)]) }}
 			</span>
@@ -741,20 +650,17 @@
 				<img src="{{ Helper::getFile(config('path.avatar').auth()->user()->avatar) }}" class="rounded-circle mr-1 avatarUser" width="40">
 			</span>
 			<div class="media-body">
-				<form action="{{url('comment/store')}}" method="post" class="comments-form">
+				<form action="{{url('comment/store')}}" method="post" class="comments-form parent">
 					@csrf
 					<input type="hidden" name="update_id" value="{{$response->id}}" />
 					<input class="isReply" type="hidden" name="isReply" value="" />
 
-					<div>
-					<span class="triggerEmoji" data-toggle="dropdown">
-						<i class="bi-emoji-smile"></i>
-					</span>
 
-					<div class="dropdown-menu dropdown-menu-right dropdown-emoji custom-scrollbar" aria-labelledby="dropdownMenuButton">
-				    @include('includes.emojis')
-				  </div>
-				</div>
+                        <span class="triggerEmoji comment-emoji-button" id="comment-emoji-button"  type="button" data-bs-auto-close="inside"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
+                            <i class="bi-emoji-smile"></i>
+                        </span>
+                        {{-- @include('includes.emojis') --}}
+                    @include('includes.emoji', ['target' => 'comment-emoji-button', 'extra_class' => 'comment-emoji'])
 
 				<input type="text" name="comment" class="form-control comments inputComment emojiArea border-0" autocomplete="off" placeholder="{{trans('general.write_comment')}}"></div>
 				</form>
@@ -769,16 +675,12 @@
 	@endif
 </div><!-- card -->
 
-@if (request()->is('/') && $loop->first && $users->total() != 0
-	|| request()->is('explore') && $loop->first && $users->total() != 0
-	|| request()->is('my/bookmarks') && $loop->first && $users->total() != 0
-	|| request()->is('my/purchases') && $loop->first && $users->total() != 0
-	|| request()->is('my/likes') && $loop->first && $users->total() != 0
-	)
+@if (request()->is('/') && $loop->first && $users->total() != 0 || request()->is('explore') && $loop->first && $users->total() != 0 || request()->is('my/bookmarks') && $loop->first && $users->total() != 0 || request()->is('my/purchases') && $loop->first && $users->total() != 0 || request()->is('my/likes') && $loop->first && $users->total() != 0 )
 	<div class="p-3 d-lg-none">
 		@include('includes.explore_creators')
 	</div>
 @endif
+
 
 @endforeach
 

@@ -431,7 +431,7 @@
 
             @if ($user->verified_id == 'yes')
               <span class="update-text">
-                {!! Helper::checkText($user->story)  !!}
+                {!! $user->story  !!}
               </span>
             @endif
             </p>
@@ -1023,12 +1023,18 @@
       </div>
     </div><!-- End Modal Subscription Free -->
   @endif
+  @include('includes.editModal')
 @endsection
+
 
 @section('javascript')
 
 @if (auth()->check() && auth()->id() == $user->id)
 <script src="{{ asset('public/js/upload-avatar-cover.js') }}?v={{$settings->version}}"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/super-build/ckeditor.js"></script>
+<script src="{{ asset('public/js/edit-modal.js') }}"></script>
+<script src="{{ asset('public/js/ckeditor-init.js') }}" type="text/javascript"></script>
+<script src="{{ asset('public/js/ckeditor-init-edit.js') }}"></script>
 @endif
 
 <script type="text/javascript">

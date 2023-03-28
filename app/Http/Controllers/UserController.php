@@ -847,7 +847,11 @@ class UserController extends Controller
         'vk' => 'url',
         'reddit' => 'url',
         'spotify' => 'url',
-        'story' => 'required_if:is_creator,==,0|max:'.$this->settings->story_length.'',
+        'story' => [
+            'required_if:is_creator,==,',
+            'max:'.$this->settings->story_length.'',
+        ],
+
         'countries_id' => 'required',
         'city' => 'max:100',
         'address' => 'max:100',
@@ -1996,6 +2000,34 @@ class UserController extends Controller
       return response()->json([
         'tags' => $data ?? null
       ], 200);
+    }
+
+    public function user_mentions(Request $request){
+        $query = $request->input('query');
+
+        $users = User::where('name', 'like', '%' . $query . '%')
+                     ->orWhere('username', 'like', '%' . $query . '%')
+                     ->take(5) // limit to 5 results
+                     ->get();
+
+        $response = [];
+        foreach ($users as $user) {
+
+            $verified = $user->verified_id == 'yes' ? ' <i class="bi bi-patch-check-fill verified"></i>' : null;
+
+            $response[] = [
+                'id' => $user->id,
+                'name' => $user->hide_name == 'yes' ? $user->username : $user->name,
+                'username' => $user->username,
+                'avatar' => Helper::getFile(config('path.avatar').$user->avatar),
+                'verified' => $user->verified_id == 'yes' ? true : false,
+                'url' => url('/').'/'.$user->username,
+            ];
+
+            // $response[] = [$user->username, ];
+        }
+
+        return response()->json($response, 200);
     }
 
     public function restrictUser($id)

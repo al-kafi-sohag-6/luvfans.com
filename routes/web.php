@@ -187,6 +187,9 @@ Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVer
   */
  Route::group(['middleware' => 'auth'], function() {
 
+    // Common Ajax Requests
+	 Route::get('ajax/post-info/{id}', [UpdatesController::class, 'ajax_post_info'])->name('ajax.post.info');
+
 	 // Dashboard
 	 Route::get('dashboard', [UserController::class, 'dashboard']);
 
@@ -380,6 +383,7 @@ Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVer
 
 	// Ajax Mentions
 	Route::get('ajax/mentions', [UserController::class, 'mentions']);
+	Route::get('ajax/user-mentions', [UserController::class, 'user_mentions'])->name('user.mention');
 
 	// Stripe Connect
 	Route::get('stripe/connect', [StripeConnectController::class, 'redirectToStripe'])->name('redirect.stripe');

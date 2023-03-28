@@ -18,7 +18,7 @@ class CountriesStatesController extends Controller
 
   public function countries()
   {
-    $countries = Countries::orderBy('id', 'desc')->paginate(50);
+    $countries = Countries::orderBy('id', 'desc')->get();
 
     return view('admin.countries')->withCountries($countries);
   }//<--- End Method
@@ -97,7 +97,7 @@ class CountriesStatesController extends Controller
 
   public function states()
   {
-    $states = States::orderBy('id', 'desc')->paginate(50);
+    $states = States::orderBy('id', 'desc')->get();
 
     return view('admin.states')->withStates($states);
   }//<--- End Method

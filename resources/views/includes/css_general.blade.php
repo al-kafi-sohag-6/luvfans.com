@@ -2766,9 +2766,18 @@
                 }
 
                 /* user settings page */
-                .cat-single{
+                .cat-single {
                     height: 48px !important;
                 }
+
+                .navbar-z-index{
+                    z-index: 999999999999999999999999999999999999999999999999999999999999999 !important;
+                }
+
+                .modal{
+                    z-index: 111111111111111111111111111111111111111111111111111111111111111111111 !important;
+                }
+
                 .select2-container--default .select2-selection--single .select2-selection__arrow {
                     top: 10% !important;
                 }
@@ -2776,21 +2785,28 @@
                 .select2-container--default .select2-selection--multiple .select2-selection__rendered {
                     margin-top: 2.1% !important;
                 }
+
                 .select2-container--default .select2-selection--multiple .select2-selection__choice {
                     margin-top: 0px !important;
                 }
-                .select2-container .select2-selection--multiple, .cat-select{
+
+                .select2-container .select2-selection--multiple,
+                .cat-select {
                     min-height: 46px !important;
                 }
+
                 .select2-container .select2-search--inline .select2-search__field {
                     margin-top: 1% !important;
                 }
+
                 .select2-container--default .select2-selection--single {
                     border-radius: 0px 0.25rem 0.25rem 0px !important;
                 }
+
                 .select2-container--default .select2-selection--single .select2-selection__placeholder {
                     color: #ffffff !important;
                 }
+
                 .select2-container--default .select2-selection--single .select2-selection__rendered {
                     background: {{ $settings->color_default }};
                     margin-right: 40%;
@@ -2801,10 +2817,83 @@
                     margin-top: 1.6% !important;
                 }
 
-                .addCatBtn, .removeCatBtn{
+                .addCatBtn,
+                .removeCatBtn {
                     padding-top: 0.9rem !important;
                     padding-bottom: 0.9rem !important;
                 }
+
+                /* ckeditor  */
+                .ck.ck-content {
+                    min-height: 10rem;
+                }
+                #formSendMsg .ck.ck-content {
+                    min-height: 5rem;
+                }
+                .ck-editor__editable.ck-focused{
+                    box-shadow: none !important;
+                }
+
+                /* Mention */
+                .verified{
+                    color: #3897f0 !important;
+                }
+                .mention-image{
+                    height: 1.5rem !important;
+                    width: auto !important;
+                    object-fit: cover !important;
+                }
+
+                .mention-name{
+                    font-size: 17px !important;
+                    font-weight: 600 !important;
+                }
+
+                .ck.ck-reset.ck-list.ck-mentions{
+                    padding: .5rem !important
+                }
+
+                .ck.ck-reset.ck-list.ck-mentions li a{
+                    padding: .5rem !important
+                    border-radius: 5px;
+                    width: 100%;
+                    display: block;
+                }
+
+                .ck.ck-reset.ck-list.ck-mentions .ck.ck-list__item .ck-button:hover:not(.ck-disabled),
+                .ck.ck-reset.ck-list.ck-mentions .ck.ck-list__item .ck-button.ck-on {
+                    background: #8898aa3b !important;
+                }
+
+                .ck.ck-toolbar .ck-customEmoji {
+                    background: url('path-to-icon.png') no-repeat center;
+                    background-size: 24px 24px;
+                }
+
+                .ck.ck-toolbar .ck-customEmoji.ck-on .ck-dropdown {
+                    visibility: visible;
+                }
+                .ck.ck-balloon-panel{
+                    z-index: 10000000000000000000000 !important;
+                }
+                .ck-editor__editable{
+                    width: 100% !important;
+                }
+
+                .parent .dropdown-toggle::after{
+                    content: '';
+                }
+                .section-msg p{
+                    margin-bottom: 0px !important;
+                }
+                .chatlist .message  a{
+                    color: #ffffff !important;
+                }
+
+                .chatlist .bg-light.message  a{
+                    color: #000000 !important;
+                }
+
 
                 @if (auth()->check() && auth()->user()->dark_mode == 'off')
                     .select2-selection {
@@ -2813,6 +2902,26 @@
 
                     .input-group-text {
                         margin: 0px !important;
+                    }
+
+                    /* Ckeditor */
+                    .ck .ck-toolbar {
+                        background-color: transparent !important;
+                        border-color: transparent !important;
+                    }
+                    .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+                        border-color: transparent !important;
+                    }
+                    .ck.ck-editor__main>.ck-editor__editable.ck-focused{
+                        border-color: transparent !important;
+                    }
+                    .ck.ck-editor__main {
+                        border-top: 1px solid {{ $settings->color_default }} !important;
+                    }
+
+                    .ck.ck-icon.ck-icon_inherit-color,
+                    .ck.ck-icon.ck-icon_inherit-color * {
+                        color: {{ $settings->color_default }} !important;
                     }
                 @else
                     .select2-selection--single {
@@ -2824,27 +2933,89 @@
                     .select2-container--default .select2-selection--single .select2-selection__rendered {
                         color: #ffffff !important;
                     }
+
+                    /* Ckeditor */
+                    .ck .ck-toolbar {
+                        background-color: #303030 !important;
+                        border-color: #303030 !important;
+                    }
+
+
+                    .ck.ck-editor__main>.ck-editor__editable {
+                        background-color: #303030 !important;
+                        border-color: #303030 !important;
+                    }
+
+                    .ck-toolbar__items .ck.ck-button:not(.ck-disabled):hover,
+                    .ck-toolbar__items a.ck.ck-button:not(.ck-disabled):hover {
+                        background-color: #222 !important;
+                    }
+                    .ck.ck-editor__main {
+                        border-top: 1px solid #ffffff !important;
+                    }
+                    .ck.ck-button.ck-on, a.ck.ck-button.ck-on {
+                        background-color: #222 !important;
+                    }
+
+                    .ck-toolbar__items .ck.ck-icon{
+                        color: #ffffff !important;
+                    }
+
                 @endif
 
-                @media screen and (max-width: 760px) {
+                @media only screen and (max-width: 1024) {
+                    .parent .dropdown-menu{
+                        max-width: 80.5% !important;
+                    }
+                }
+                @media only screen and (max-width: 760px) and (min-width: 320px) {
 
-                    .cat-select-div{
+                    .cat-select-div {
                         width: 80% !important;
                     }
-                    .addCatBtnDiv, .removeCatBtnDiv{
+
+                    .addCatBtnDiv,
+                    .removeCatBtnDiv {
                         margin-bottom: 0px !important;
                         width: 20% !important;
                         min-height: unset !important;
                         margin-bottom: 0px !important;
                     }
 
-                  .addCatBtn, .removeCatBtn{
-                      margin-bottom: 0px !important;
-                      position: relative;
-                      top: -60%;
-                      padding-top: 50px !important;
-                      padding-bottom: 50px !important;
-                  }
+                    .addCatBtn,
+                    .removeCatBtn {
+                        margin-bottom: 0px !important;
+                        position: relative;
+                        top: -60%;
+                        padding-top: 50px !important;
+                        padding-bottom: 50px !important;
+                    }
+
+                    .parent .dropdown-menu{
+                        max-width: 95.5% !important;
+                    }
+
+
+                    .ck.ck-balloon-panel.ck-balloon-panel_caret_se.ck-balloon-panel_visible{
+                        left: 15% !important;
+                        width: 75% !important;
+                    }
+                    .mention-name {
+                        font-size: 13px !important;
+                    }
+                    .comment-emoji{
+                        right: unset !important;
+                        left: -10% !important;
+                    }
+
+                }
+                @media only screen and (max-width: 320px) {
+                    .parent .dropdown-menu .emoji-div{
+                        width: 18rem !important;
+                    }
+                    .parent .dropdown-menu{
+                        width: 19rem !important;
+                    }
 
                 }
             </style>

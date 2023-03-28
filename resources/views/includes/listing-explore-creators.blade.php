@@ -1,7 +1,7 @@
 @foreach ($users as $user)
 
 <a href="{{url($user->username)}}">
-<div class="w-100 h-100 d-block" style="background: @if ($user->cover != '') url({{ Helper::getFile(config('path.cover').$user->cover) }})  @endif #505050 center center; border-radius: 6px; background-size: cover;">
+<div class="w-100 h-100 d-block user-cover" style="background: url('@if ($user->cover != '') {{ Helper::getFile(config('path.cover').$user->cover) }}  @endif') #505050 center center; border-radius: 6px; background-size: cover;">
 
   <div class="card-cover position-relative" style="height: 50px">
     @if ($user->free_subscription == 'yes')

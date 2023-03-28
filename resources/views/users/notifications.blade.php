@@ -65,18 +65,18 @@
         			case 2:
         				$action          = trans('users.like_you');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
         				break;
         			case 3:
         				$action          = trans('users.comment_you');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
         				break;
 
               case 4:
         				$action          = trans('general.liked_your_comment');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
         				break;
 
               case 5:
@@ -88,19 +88,19 @@
             case 6:
               $action          = trans('general.has_bought_your_message');
               $linkDestination = url('messages', $key->userId);
-              $text_link       = Str::limit($key->message, 50, '...');
+              $text_link       = $key->message;
               break;
 
               case 7:
         				$action          = trans('general.has_bought_your_content');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
         				break;
 
               case 8:
         				$action          = trans('general.has_approved_your_post');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
                 $iconNotify      = 'bi bi-check2-circle';
                 $notyNormal      = false;
         				break;
@@ -108,7 +108,7 @@
               case 9:
                 $action          = trans('general.video_processed_successfully_post');
                 $linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                $text_link       = $key->description;
                 $iconNotify      = 'bi bi-play-circle';
                 $notyNormal      = false;
                 break;
@@ -116,7 +116,7 @@
               case 10:
                 $action          = trans('general.video_processed_successfully_message');
                 $linkDestination = url('messages', $key->userDestination);
-                $text_link       = Str::limit($key->message, 50, '...');
+                $text_link       = $key->message;
                 $iconNotify       = 'bi bi-play-circle';
                 $notyNormal      = false;
                 break;
@@ -151,13 +151,13 @@
               case 15:
         				$action          = trans('general.has_bought_your_item');
         				$linkDestination = url('my/sales');
-                $text_link       = Str::limit($key->productName, 50, '...');
+                        $text_link       = $key->productName;
         				break;
 
               case 16:
         				$action          = trans('general.has_mentioned_you');
         				$linkDestination = $postUrl;
-                $text_link       = Str::limit($key->description, 50, '...');
+                        $text_link       = $key->description;
         				break;
 
                 case 17:
@@ -203,7 +203,8 @@
                 {{$action}}
 
                 @if ($linkDestination != false)
-                  <a href="{{url($linkDestination)}}">{{$text_link}}</a>
+
+                  <a href="{{url($linkDestination)}}">{{ Str::limit(strip_tags($text_link), 50, '...') }}</a>
                 @endif
               </h6>
 
@@ -300,7 +301,7 @@
                 <i class="bi-info-circle mr-1"></i> {{trans('general.push_notification_warning')}}
               </small>
               @endif
-              
+
               @if (auth()->user()->verified_id == 'yes' && $settings->disable_new_post_notification || ! $settings->disable_new_post_notification)
                 <div class="mt-3">
                   <h6 class="position-relative">{{trans('general.email_notification')}}

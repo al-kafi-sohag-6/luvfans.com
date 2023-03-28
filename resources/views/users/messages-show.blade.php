@@ -132,17 +132,13 @@
               <input type="hidden" name="_token" value="{{ csrf_token() }}">
               <input type="file" name="zip" id="zipFile" accept="application/x-zip-compressed" class="visibility-hidden">
 
-              <div class="w-100 mr-2 position-relative">
-                <div>
-                <span class="triggerEmoji" data-toggle="dropdown">
-                  <i class="bi-emoji-smile"></i>
-                </span>
+              <div class="w-100 mr-2 position-relative parent">
 
-                <div class="dropdown-menu dropdown-menu-right dropdown-emoji custom-scrollbar" aria-labelledby="dropdownMenuButton">
+
+                {{-- <div class="dropdown-menu dropdown-menu-right dropdown-emoji custom-scrollbar" aria-labelledby="dropdownMenuButton">
                   @include('includes.emojis')
-                </div>
-              </div>
-                <textarea class="form-control textareaAutoSize emojiArea border-0" data-post-length="{{$settings->update_length}}" rows="1" placeholder="{{trans('general.write_something')}}" id="message" name="message"></textarea>
+                </div> --}}
+                <textarea class="form-control textareaAutoSize emojiArea messageText border-0" data-post-length="{{$settings->update_length}}" rows="1" placeholder="{{trans('general.write_something')}}" id="message" name="message"></textarea>
               </div>
 
               <div class="form-group display-none mt-2" id="price">
@@ -161,7 +157,7 @@
 
               <input type="file" name="media[]" id="file" accept="image/*,video/mp4,video/x-m4v,video/quicktime,audio/mp3" multiple class="visibility-hidden filepond">
 
-              <div class="justify-content-between align-items-center">
+              <div class="justify-content-between align-items-center parent">
 
                     <button type="button" class="btnMultipleUpload btn btn-upload btn-tooltip e-none align-bottom @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill" data-toggle="tooltip" data-placement="top" title="{{trans('general.upload_media')}} ({{ trans('general.media_type_upload') }})">
                       <i class="feather icon-image f-size-25"></i>
@@ -188,6 +184,12 @@
                     </svg>
                   </button>
                 @endif
+                <button class="btn btn-upload btn-tooltip e-none align-bottom @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill message-emoji-button" id="message-emoji-button"  type="button" data-bs-auto-close="inside"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
+                    <i class="bi-emoji-smile f-size-25 align-bottom feather"></i>
+                </button>
+
+                @include('includes.emoji', ['target' => 'message-emoji-button', 'extra_class' => 'message-emoji'])
+
 
           <div class="d-inline-block float-right rounded-pill mt-3 position-relative">
             <div class="btn-blocked display-none"></div>
@@ -221,6 +223,7 @@
 @endsection
 
 @section('javascript')
+<script src="{{ asset('public/js/message.js') }}"></script>
 <script src="{{ asset('public/js/messages.js') }}?v={{$settings->version}}"></script>
 <script src="{{ asset('public/js/fileuploader/fileuploader-msg.js') }}?v={{$settings->version}}"></script>
 <script src="{{ asset('public/js/paginator-messages.js') }}"></script>

@@ -4,10 +4,10 @@
 	<h5 class="mb-4 fw-light">
     <a class="text-reset" href="{{ url('panel/admin') }}">{{ __('admin.dashboard') }}</a>
       <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">Sub Categories ({{$totalSubCategories}})</span>
+      <span class="text-muted">{{ __('admin.subcategories') }} ({{$totalSubCategories}})</span>
 
 			<a href="{{ url('panel/admin/sub-categories/add') }}" class="btn btn-sm btn-dark float-lg-end mt-1 mt-lg-0">
-				<i class="bi-plus-lg"></i> Add New
+				<i class="bi-plus-lg"></i> {{ trans('general.add_new') }}
 			</a>
   </h5>
 
@@ -30,10 +30,9 @@
 				<div class="card-body p-lg-4">
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 
-               @if ($totalSubCategories !=  0)
                   <tr>
                      <th class="active">ID</th>
                      <th class="active">Name</th>
@@ -43,7 +42,8 @@
                      <th class="active">{{ trans('admin.search') }}</th>
                      <th class="active">{{ trans('admin.actions') }}</th>
                    </tr>
-
+                         </thead>
+                         <tbody>
                  @foreach ($subCategories as $scategory)
                    <tr>
                      <td>{{ $scategory->id }}</td>
@@ -65,11 +65,6 @@
 										</td>
                    </tr><!-- /.TR -->
                    @endforeach
-
-									@else
-										<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-									@endif
-
 								</tbody>
 								</table>
 							</div><!-- /.box-body -->
@@ -80,4 +75,34 @@
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('admin.subcategories') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('admin.subcategories') }}',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

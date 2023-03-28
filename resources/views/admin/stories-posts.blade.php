@@ -10,7 +10,7 @@
       <i class="bi-chevron-right me-1 fs-6"></i>
 	  <span class="text-muted">{{ __('general.stories') }}</span>
 	  <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">{{ __('general.posts') }} ({{$data->total()}})</span>
+      <span class="text-muted">{{ __('general.posts') }} ({{$data->count()}})</span>
   </h5>
 
 <div class="content">
@@ -30,10 +30,8 @@
 			<div class="card shadow-custom border-0">
 				<div class="card-body p-lg-4">
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
-
-							@if ($data->count() !=  0)
+						<table class="table table-hover" id="dataTable">
+                            <thead>
 								 <tr>
 									  <th class="active">ID</th>
 										<th class="active">{{ trans('admin.description') }}</th>
@@ -42,7 +40,8 @@
 										<th class="active">{{ trans('admin.date') }}</th>
 										<th class="active">{{ trans('admin.actions') }}</th>
 									</tr>
-
+                            </thead>
+                            <tbody>
 								@foreach ($data as $story)
 
 									@php
@@ -91,7 +90,7 @@
 											 'url' => "panel/admin/stories/posts/delete/$story->id",
 											 'class' => 'displayInline'
 										 ]) !!}
-										 
+
 										 {!! Form::button('<i class="bi-trash-fill"></i>', ['class' => 'btn btn-danger btn-sm padding-btn rounded-pill actionDelete']) !!}
 
 										 {!! Form::close() !!}
@@ -101,21 +100,12 @@
 
 									</tr><!-- /.TR -->
 									@endforeach
-
-									@else
-										<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-									@endif
-
 								</tbody>
 								</table>
 							</div><!-- /.box-body -->
 
 				 </div><!-- card-body -->
  			</div><!-- card  -->
-
-		@if ($data->lastPage() > 1)
-			{{ $data->onEachSide(0)->links() }}
-		@endif
  		</div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
@@ -125,4 +115,31 @@
 @section('javascript')
 <script src="{{ asset('public/js/plyr/plyr.min.js') }}?v={{$settings->version}}"></script>
 <script src="{{ asset('public/js/plyr/plyr.polyfilled.min.js') }}?v={{$settings->version}}"></script>
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('general.stories') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 3, 4]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('general.stories') }}',
+                    exportOptions: {
+                        columns: [0, 1, 3, 4]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

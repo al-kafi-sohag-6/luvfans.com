@@ -45,7 +45,7 @@ CKEDITOR.replace('content', {
   // filebrowserUploadMethod: 'xhr',
 
   // Remove the redundant buttons from toolbar groups defined above.
-  removeButtons: 'Subscript,Superscript,Anchor,Specialchar',
+  removeButtons: 'Subscript,Superscript,Specialchar',
     });
 
     var data = CKEDITOR.instances.content.getData();

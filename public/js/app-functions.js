@@ -333,6 +333,12 @@
         var $error = element.attr('data-error');
         var $errorMsg = element.attr('data-msg-error');
         var description = $('#updateDescription').val();
+
+        if (getEditorData()) {
+            description = getEditorData();
+        }
+
+
         var postLength = $('#updateDescription').attr('data-post-length');
         var input = element.parents('form').find('input[name=price]');
         var inputTitle = element.parents('form').find('input[name=title]');
@@ -390,6 +396,11 @@
                     }
                 },
                 success: function (result) {
+
+
+                    if (getEditorData()) {
+                        setEditorData('');
+                    }
 
                     //===== SUCCESS =====//
                     if (result.success != false && !result.pending) {
@@ -716,38 +727,38 @@
     });
 
     // Maximum length Update
-    $(document).on('keyup', '#updateDescription', function () {
-        var element = $(this).val();
-        var maximum = $(this).attr('data-post-length');
-        var button = $('#btnCreateUpdate');
+    // $(document).on('keyup', '#updateDescription', function () {
+    //     var element = $(this).val();
+    //     var maximum = $(this).attr('data-post-length');
+    //     var button = $('#btnCreateUpdate');
 
-        if (trim(element).length >= 1 && trim(element).length <= maximum) {
-            button.removeAttr('disabled').removeClass('e-none');
-            return false;
-        } else {
-            button.attr({ 'disabled': true }).addClass('e-none');
-            return false;
-        }
-    });
+    //     if (trim(element).length >= 1 && trim(element).length <= maximum) {
+    //         button.removeAttr('disabled').removeClass('e-none');
+    //         return false;
+    //     } else {
+    //         button.attr({ 'disabled': true }).addClass('e-none');
+    //         return false;
+    //     }
+    // });
 
     // Maximum length Post
-    $('#updateDescription').on('keyup', function () {
+    // $('#updateDescription').on('keyup', function () {
 
-        var characterCount = $(this).val().length,
-            maximum = $('#maximum'),
-            theCount = $('#the-count'),
-            postLength = $(this).attr('data-post-length');
+    //     var characterCount = $(this).val().length,
+    //         maximum = $('#maximum'),
+    //         theCount = $('#the-count'),
+    //         postLength = $(this).attr('data-post-length');
 
-        maximum.text(postLength - characterCount);
+    //     maximum.text(postLength - characterCount);
 
-        if (characterCount >= postLength) {
-            maximum.css('color', '#ff0000');
-            maximum.css('font-weight', 'bold');
-        } else {
-            maximum.css('color', '#666');
-            maximum.css('font-weight', 'normal');
-        }
-    });
+    //     if (characterCount >= postLength) {
+    //         maximum.css('color', '#ff0000');
+    //         maximum.css('font-weight', 'bold');
+    //     } else {
+    //         maximum.css('color', '#666');
+    //         maximum.css('font-weight', 'normal');
+    //     }
+    // });
 
     // Copy Link
     var clip = new ClipboardJS('.copy-url');
@@ -1768,7 +1779,6 @@
                     element.find('i').removeClass('spinner-border spinner-border-sm align-middle mr-1');
                 },
                 success: function (result) {
-
                     //===== SUCCESS =====//
                     if (result.success) {
 
@@ -1778,12 +1788,12 @@
                         form.find('.blocked').hide();
 
                         if (result.locked == 'yes') {
-                            element.parents('.card-updates').find('.type-post').html('<i class="feather icon-lock mr-1"></i> ' + result.price + '').attr({ 'title': locked_post });
+                            $('.views[data=' + result.id + ']').find('.type-post').html('<i class="feather icon-lock mr-1"></i> ' + result.price + '').attr({ 'title': locked_post });
                         } else {
-                            element.parents('.card-updates').find('.type-post').html('<i class="iconmoon icon-WorldWide mr-1"></i>').attr({ 'title': public_post });
+                            $('.views[data=' + result.id + ']').find('.type-post').html('<i class="iconmoon icon-WorldWide mr-1"></i>').attr({ 'title': public_post });
                         }
 
-                        element.parents('.card-updates').find('.update-text').html(result.description);
+                        $('.views[data=' + result.id + ']').find('.update-text').html(result.description);
 
                         form.find('.errorUdpate').hide();
 
@@ -2458,12 +2468,45 @@
         }
     });
 
-    $(document).on('click', '.emoji', function (e) {
-        var element = $(this);
-        var smiley = element.attr('data-emoji');
-        var input = element.parents('form').find('.emojiArea');
-        input.val(input.focus().val() + "" + smiley + "");
-        input.trigger('keyup');
+    // $(document).on('click', '.emoji', function (e) {
+    //     var element = $(this);
+    //     var smiley = element.attr('data-emoji');
+    //     var input = element.parents('form').find('.emojiArea');
+    //     input.val(input.focus().val() + "" + smiley + "");
+    //     input.trigger('keyup');
+    // });
+
+    $(document).on('emoji-click', '.comment-emoji', function (event) {
+        const cemoji = event.detail.emoji.unicode;
+
+        $(this).removeClass('show');
+
+        const inputField = $(this).next('.inputComment')[0];
+        const cursorPosition = inputField.selectionStart;
+        const currentValue = inputField.value;
+        // Insert the emoji at the cursor position
+        const newValue =
+            currentValue.substring(0, cursorPosition) +
+            cemoji +
+            currentValue.substring(cursorPosition);
+        inputField.value = newValue;
+        // Update the cursor position to be after the inserted emoji
+        const newCursorPosition = cursorPosition + cemoji.length;
+        inputField.setSelectionRange(newCursorPosition, newCursorPosition);
+    });
+
+    $(document).click(function (event) {
+        var menu = $('.dropdown-menu');
+        if ($(this).is(event.target) || menu.has(event.target).length > 0) {
+        } else {
+            $('.dropdown-menu').removeClass('show');
+        }
+    });
+
+    $('.parent').on('hide.bs.dropdown', function (e) {
+        if (e.clickEvent) {
+            e.preventDefault();
+        }
     });
 
     /*========= restrictUser ==============*/

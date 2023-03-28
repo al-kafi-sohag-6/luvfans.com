@@ -125,7 +125,9 @@
                                     </div>
                                     <input class="form-control datepicker" @if (auth()->user()->birthdate_changed == 'yes') disabled @endif
                                         name="birthdate" placeholder="{{ trans('general.birthdate') }} *"
-                                        value=" {{ auth()->user()->birthdate ? \Carbon\Carbon::parse(auth()->user()->birthdate)->format(Helper::formatDatepicker()) : '' }}"
+                                        value=" {{ auth()->user()->birthdate
+                                            ? \Carbon\Carbon::parse(auth()->user()->birthdate)->format(Helper::formatDatepicker())
+                                            : '' }}"
                                         autocomplete="off" type="text" required>
                                 </div>
 
@@ -169,47 +171,51 @@
 
                                 {{--
 
-                                <div class="col-md-6" id="billing">
-                                    <div class="input-group mb-4">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="far fa-lightbulb"></i></span>
-                                        </div>
-                                        <select name="categories_id[]" multiple class="form-control categoriesMultiple">
-                                            @foreach (Categories::where('mode', 'on')->orderBy('name')->get() as $category)
-                                                <option @if (in_array($category->id, $categories)) selected="selected" @endif
-                                                    value="{{ $category->id }}">
-                                                    {{ Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                        <div class="col-md-6" id="billing">
+                            <div class="input-group mb-4">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-lightbulb"></i></span>
                                 </div>
-
-
-                                <div class="col-md-6" id="billing">
-                                    <div class="input-group mb-4">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="far fa-lightbulb"></i></span>
-                                        </div>
-                                        <select name="categories_id[]" multiple class="form-control categoriesMultiple">
-                                            @foreach (Categories::where('mode', 'on')->orderBy('name')->get() as $category)
-                                                <option @if (in_array($category->id, $categories)) selected="selected" @endif
-                                                    value="{{ $category->id }}">
-                                                    {{ Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div><!-- ./col-md-12 --> --}}
-
-
-                            <div class="col-lg-12 py-2">
-                                <h6 class="text-muted">-- {{ trans('general.category_information') }}</h6>
+                                <select name="categories_id[]" multiple class="form-control categoriesMultiple">
+                                    @foreach (Categories::where('mode', 'on')->orderBy('name')->get() as $category)
+                                    <option @if (in_array($category->id, $categories)) selected="selected" @endif
+                                        value="{{ $category->id }}">
+                                        {{ Lang::has('categories.' . $category->slug) ? __('categories.' .
+                                        $category->slug) : $category->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            @php
-                                $count = 0;
-                                $query = App\Models\UserCategory::where('user_id', auth()->user()->id)->get()->groupBy('category_id')
-                            @endphp
+                        </div>
+
+
+                        <div class="col-md-6" id="billing">
+                            <div class="input-group mb-4">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-lightbulb"></i></span>
+                                </div>
+                                <select name="categories_id[]" multiple class="form-control categoriesMultiple">
+                                    @foreach (Categories::where('mode', 'on')->orderBy('name')->get() as $category)
+                                    <option @if (in_array($category->id, $categories)) selected="selected" @endif
+                                        value="{{ $category->id }}">
+                                        {{ Lang::has('categories.' . $category->slug) ? __('categories.' .
+                                        $category->slug) : $category->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div><!-- ./col-md-12 --> --}}
+
+
+                                <div class="col-lg-12 py-2">
+                                    <h6 class="text-muted">-- {{ trans('general.category_information') }}</h6>
+                                </div>
+                                @php
+                                    $count = 0;
+                                    $query = App\Models\UserCategory::where('user_id', auth()->user()->id)
+                                        ->get()
+                                        ->groupBy('category_id');
+                                @endphp
                                 @forelse ($query as $key => $categories)
                                     @php
                                         $data = $categories->first();
@@ -243,21 +249,22 @@
                                                 id="subcategory-{{ $count }}" multiple>
                                                 @foreach (App\Models\SubCategories::where('mode', 'on')->where('category_id', $data->category_id)->orderBy('name')->get() as $subcategory)
                                                     <option value="{{ $subcategory->id }}"
-                                                        @foreach ($categories as $subcategories)
-                                                            @if ($subcategories->sub_category_id == $subcategory->id)
-                                                                selected
-                                                            @endif
-                                                        @endforeach
-                                                    >
-                                                        {{ Lang::has('subcategories.' . $subcategory->slug) ? __('subcategories.' . $subcategory->slug) : $subcategory->name }}
+                                                        @foreach ($categories as $subcategories) @if ($subcategories->sub_category_id == $subcategory->id)
+                                        selected
+                                        @endif @endforeach>
+                                                        {{ Lang::has('subcategories.' . $subcategory->slug)
+                                                            ? __('subcategories.' . $subcategory->slug)
+                                                            : $subcategory->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     @if ($loop->first)
-                                        <div class="col-md-1 cat-select add-cat-{{ $count }} addCatBtnDiv" id="addCatBtnDiv">
-                                            <button class="btn btn-info input-group d-flex justify-content-center mb-4 addCatBtn"
+                                        <div class="col-md-1 cat-select add-cat-{{ $count }} addCatBtnDiv"
+                                            id="addCatBtnDiv">
+                                            <button
+                                                class="btn btn-info input-group d-flex justify-content-center mb-4 addCatBtn"
                                                 type="button" id="addCatBtn" data-count="{{ $query->count() }}">
                                                 <i class="fas fa-plus"></i>
                                             </button>
@@ -296,7 +303,8 @@
                                                 <span class="input-group-text"><i class="fa fa-folder-open"></i></span>
                                             </div>
                                             <select name="category[1][subcategory][]"
-                                                class="form-control custom-select subcategory" id="subcategory-1" multiple>
+                                                class="form-control custom-select subcategory" id="subcategory-1"
+                                                multiple>
 
                                             </select>
                                         </div>
@@ -616,12 +624,11 @@
                         </div><!-- ./col-md-6 -->
                     </div><!-- End Row Form Group -->
 
-                    <div class="form-group">
+                    <div class="form-group story">
                         <label class="w-100"><i class="fa fa-bullhorn text-muted"></i> {{ trans('users.your_story') }}
                             *
                             <span id="the-count" class="float-right d-inline">
-                                <span id="current"></span>
-                                <span id="maximum">/ {{ $settings->story_length }}</span>
+                                <span id="maximum">Max: {{ $settings->story_length }}</span>
                             </span>
                         </label>
                         <textarea name="story" id="story" rows="5" cols="40"
@@ -657,11 +664,9 @@
     <script src="{{ asset('public/plugins/select2/i18n/' . config('app.locale') . '.js') }}" type="text/javascript">
     </script>
 
-    <script type="text/javascript">
-        @if (auth()->user()->verified_id == 'yes')
-            $('#current').html($('#story').val().length);
-        @endif
+    <script src="{{ asset('public/plugins/ckeditor5/build/ckeditor.js') }}" type="text/javascript"></script>
 
+    <script type="text/javascript">
         function selectCatRefresh() {
             $('.category').select2({
                 placeholder: '{{ trans('admin.categories') }}',
@@ -701,7 +706,7 @@
         }
 
         function remove_cat(count) {
-            if($('#subcategory-' + count).select2('val') != '' || $('#category-' + count).select2('val') != '' ){
+            if ($('#subcategory-' + count).select2('val') != '' || $('#category-' + count).select2('val') != '') {
                 alert('Are you sure you want to remove this category? This action cannot be undone.');
             }
             $('.add-cat-' + count).remove();
@@ -806,27 +811,45 @@
             });
         });
 
-        $( document ).ready(function() {
+        $(document).ready(function() {
 
-        selectCatRefresh();
-        selectSubCatRefresh();
-@php
-    $count = 0;
-@endphp
-        @forelse (App\Models\UserCategory::where('user_id', auth()->user()->id)->get()->groupBy('category_id') as $key => $categories)
-        @php
-            $data = $categories->first();
-            $count += 1;
-        @endphp
-        $('#category-{{ $count }}').on('change', function() {
-            let count = {{ $count }};
-            categoryChange(this, count);
-        });
-        @empty
-        $('#category-1').on('change', function() {
-            categoryChange(this, 1);
-        });
-        @endforelse
+            selectCatRefresh();
+            selectSubCatRefresh();
+            @php
+                $count = 0;
+            @endphp
+            @forelse (App\Models\UserCategory::where('user_id', auth()->user()->id)->get()->groupBy('category_id') as $key => $categories)
+                @php
+                    $data = $categories->first();
+                    $count += 1;
+                @endphp
+                $('#category-{{ $count }}').on('change', function() {
+                    let count = {{ $count }};
+                    categoryChange(this, count);
+                });
+            @empty
+                $('#category-1').on('change', function() {
+                    categoryChange(this, 1);
+                });
+            @endforelse
+
+            @if (auth()->user()->verified_id == 'yes')
+                ClassicEditor
+                    .create(document.querySelector('#story'), {
+                        licenseKey: '',
+                        toolbar: ['bold', 'italic', 'link', '|', 'undo', 'redo'],
+                        link: {
+                            defaultProtocol: 'https://',
+                        }
+                    })
+                    .then(editor5 => {
+                        window.editor5 = editor5;
+                    })
+                    .catch(error => {
+                        console.error('Oops, something went wrong!');
+                        console.error(error);
+                    });
+            @endif
 
         });
     </script>

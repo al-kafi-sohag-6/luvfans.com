@@ -394,7 +394,7 @@ class UpdatesController extends Controller
     $input['is_ppv'] = $sql->price == 0.00 ? 'no' : 'yes';
 
     $validator = Validator::make($input, [
-      'description'  => 'required|min:1|max:'.$this->settings->update_length.'',
+      'description'  => ['required','min:1', 'max:'.$this->settings->update_length.'', new RestrictedWordRule('post')],
       '_description' => 'required_if:_isVideoEmbed,==,yes|min:1|max:'.$this->settings->update_length.'',
       'price'       => 'required_if:is_ppv,==,yes|numeric|min:'.$this->settings->min_ppv_amount.'|max:'.$this->settings->max_ppv_amount,
       'title'       => 'max:100',
@@ -407,6 +407,9 @@ class UpdatesController extends Controller
              'errors' => $validator->getMessageBag()->toArray(),
          ]);
      } //<-- Validator
+
+      // Send Notification Mention
+      Helper::sendNotificationMentionEdit($this->request->description, $id);
 
       //<===== Locked Content
       if ($this->request->locked) {
@@ -470,7 +473,8 @@ class UpdatesController extends Controller
 
       return response()->json([
               'success' => true,
-              'description' => Helper::linkText(Helper::checkText($sql->description, $isVideoEmbed)),
+              'id' => $sql->id,
+              'description' => $sql->description,
               'price' => $this->request->price ? Helper::amountFormatDecimal($this->request->price) : '',
               'locked' => $this->request->locked
             ]);
@@ -948,6 +952,12 @@ class UpdatesController extends Controller
             $post->increment('video_views');
            }
         }
+      }
+
+
+      public function ajax_post_info($id){
+        $post = Updates::with(['media'])->findOrFail($id);
+        return response()->json($post, 200);
       }
 
 }

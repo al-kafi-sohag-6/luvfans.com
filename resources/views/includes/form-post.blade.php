@@ -22,9 +22,9 @@
                     <img src="{{ Helper::getFile(config('path.avatar').auth()->user()->avatar) }}" class="rounded-circle avatarUser" width="60" height="60">
                 </span>
 
-                <div class="media-body position-relative">
+                <div class="media-body position-relative" style="width: 45%;">
 
-                    <textarea class="form-control textareaAutoSize border-0 emojiArea mentions" name="description" id="updateDescription" data-post-length="{{$settings->update_length}}" rows="4" cols="40" placeholder="{{trans('general.write_something')}}"></textarea>
+                    <textarea class="form-control textareaAutoSize updateDescription border-0 emojiArea mentions" name="description" id="updateDescription" data-post-length="{{$settings->update_length}}" rows="4" cols="40" placeholder="{{trans('general.write_something')}}"></textarea>
                 </div>
             </div><!-- media -->
 
@@ -37,7 +37,7 @@
 
         </div>
         <div class="card-footer bg-white border-0 pt-0 rounded-large">
-            <div class="justify-content-between align-items-center">
+            <div class="justify-content-between align-items-center parent">
 
                 <div class="form-group display-none" id="price">
                     <div class="input-group mb-2">
@@ -97,13 +97,16 @@
                     <i class="bi-type f-size-25"></i>
                 </button>
 
-                <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-upload p-bottom-8 btn-tooltip-form e-none align-bottom @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill">
+                <button type="button" data-bs-auto-close="inside"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownMenuButton" class="dropdown-toggle btn btn-upload p-bottom-8 btn-tooltip-form e-none align-bottom @if (auth()->user()->dark_mode == 'off') text-primary @else text-white @endif rounded-pill" style="align-items: center; justify-content: center; text-align: center; display: inline-flex;">
                     <i class="bi-emoji-smile f-size-25"></i>
                 </button>
 
-                <div class="dropdown-menu dropdown-menu-right dropdown-emoji custom-scrollbar" aria-labelledby="dropdownEmoji">
+                @include('includes.emoji', ['target' => 'dropdownMenuButton'])
+
+
+                {{-- <div class="dropdown-menu dropdown-menu-right dropdown-emoji custom-scrollbar" aria-labelledby="dropdownEmoji">
                     @include('includes.emojis')
-                </div>
+                </div> --}}
 
                 <div class="d-inline-block float-right mt-3 position-relative w-100-mobile">
 

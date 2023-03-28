@@ -4,7 +4,7 @@
 	<h5 class="mb-4 fw-light">
     <a class="text-reset" href="{{ url('panel/admin') }}">{{ __('admin.dashboard') }}</a>
       <i class="bi-chevron-right me-1 fs-6"></i>
-      <span class="text-muted">{{ __('general.deposits') }} ({{$data->total()}})</span>
+      <span class="text-muted">{{ __('general.deposits') }} ({{$data->count()}})</span>
   </h5>
 
 <div class="content">
@@ -26,10 +26,9 @@
 				<div class="card-body p-lg-4">
 
 					<div class="table-responsive p-0">
-						<table class="table table-hover">
-						 <tbody>
+						<table class="table table-hover" id="dataTable">
+						 <thead>
 
-               @if ($data->total() !=  0 && $data->count() != 0)
                   <tr>
                      <th class="active">ID</th>
                      <th class="active">{{ trans('admin.user') }}</th>
@@ -39,7 +38,8 @@
                      <th class="active">{{ trans('admin.date') }}</th>
 										 <th class="active">{{ trans('admin.status') }}</th>
                    </tr><!-- /.TR -->
-
+                         </thead>
+                         <tbody>
 
                  @foreach ($data as $deposit)
 
@@ -56,7 +56,7 @@
 						</td>
                      <td>
 						@if ($deposit->status == 'pending')
-							{{ $deposit->txn_id }} 
+							{{ $deposit->txn_id }}
 						@else
 						<a href="{{ url('deposits/invoice', $deposit->id) }} " target="_blank" title="{{ __('general.invoice') }}">
 							{{ $deposit->txn_id }}  <i class="bi-box-arrow-up-right"></i>
@@ -77,23 +77,44 @@
 					</td>
                    </tr><!-- /.TR -->
                    @endforeach
-
-						@else
-							<h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-						@endif
-
 					</tbody>
 					</table>
 				</div><!-- /.box-body -->
 
 				 </div><!-- card-body -->
  			</div><!-- card  -->
-
-			@if ($data->lastPage() > 1)
-				{{ $data->onEachSide(0)->links() }}
-			@endif
  		</div><!-- col-lg-12 -->
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('general.deposits') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('general.deposits') }}',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

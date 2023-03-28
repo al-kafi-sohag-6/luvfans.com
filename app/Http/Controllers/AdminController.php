@@ -173,29 +173,29 @@ class AdminController extends Controller
 			 $data = User::where('name', 'LIKE', '%'.$search.'%')
 			 ->orWhere('username', 'LIKE', '%'.$search.'%')
 			 ->orWhere('email', 'LIKE', '%'.$search.'%')
-			 ->orderBy('id','desc')->paginate(20);
+			 ->orderBy('id','desc')->get();
 		 } else {
-			 $data = User::orderBy('id','desc')->paginate(20);
+			 $data = User::orderBy('id','desc')->get();
 		 }
 
 		 if (request('sort') == 'admins') {
-			 $data = User::whereRole('admin')->orderBy('id','desc')->paginate(20);
+			 $data = User::whereRole('admin')->orderBy('id','desc')->get();
 		 }
 
 		 if (request('sort') == 'creators') {
-			 $data = User::where('verified_id', 'yes')->orderBy('id','desc')->paginate(20);
+			 $data = User::where('verified_id', 'yes')->orderBy('id','desc')->get();
 		 }
 
 		 if (request('sort') == 'email_pending') {
-			 $data = User::whereStatus('pending')->orderBy('id','desc')->paginate(20);
+			 $data = User::whereStatus('pending')->orderBy('id','desc')->get();
 		 }
 
 		 if (request('sort') == 'balance') {
-			$data = User::orderBy('balance','desc')->paginate(20);
+			$data = User::orderBy('balance','desc')->get();
 		}
 
 		if (request('sort') == 'wallet') {
-			$data = User::orderBy('wallet','desc')->paginate(20);
+			$data = User::orderBy('wallet','desc')->get();
 		}
 
 		 return view('admin.members', ['data' => $data, 'query' => $search, 'sort' => $sort]);
@@ -468,7 +468,7 @@ class AdminController extends Controller
 
 	public function subscriptions()
 	{
-		$data = Subscriptions::orderBy('id','DESC')->paginate(50);
+		$data = Subscriptions::orderBy('id','DESC')->get();
 		return view('admin.subscriptions', ['data' => $data]);
 	}//<--- End Method
 
@@ -477,9 +477,9 @@ class AdminController extends Controller
 		$query = $request->input('q');
 
 		if ($query != '' && strlen( $query ) > 2) {
-			$data = Transactions::where('txn_id', 'LIKE', '%'.$query.'%')->orderBy('id','DESC')->paginate(50);
+			$data = Transactions::where('txn_id', 'LIKE', '%'.$query.'%')->orderBy('id','DESC')->get();
 		} else {
-			$data = Transactions::orderBy('id','DESC')->paginate(50);
+			$data = Transactions::orderBy('id','DESC')->get();
 		}
 
 		return view('admin.transactions', ['data' => $data]);
@@ -639,7 +639,7 @@ class AdminController extends Controller
 
 	public function withdrawals()
 	{
-		$data = Withdrawals::orderBy('id','DESC')->paginate(50);
+		$data = Withdrawals::orderBy('id','DESC')->get();
 		return view('admin.withdrawals', ['data' => $data]);
 	}//<--- End Method
 
@@ -1065,11 +1065,11 @@ class AdminController extends Controller
 
 	public function posts(Request $request)
 	{
-		$data = Updates::orderBy('id','desc')->paginate(20);
+		$data = Updates::orderBy('id','desc')->get();
 		$sort  = $request->input('sort');
 
 		if (request('sort') == 'pending') {
-			$data = Updates::whereStatus('pending')->orderBy('id','desc')->paginate(20);
+			$data = Updates::whereStatus('pending')->orderBy('id','desc')->get();
 		}
 
 		return view('admin.posts', ['data' => $data, 'sort' => $sort]);
@@ -1560,7 +1560,7 @@ class AdminController extends Controller
 	// Verification Requests
 	public function memberVerification()
 	{
-		$data = VerificationRequests::orderBy('id','desc')->paginate(30);
+		$data = VerificationRequests::orderBy('id','desc')->get();
 		return view('admin.verification')->withData($data);
 	}
 
@@ -1802,7 +1802,7 @@ class AdminController extends Controller
 
 	public function blog()
 	{
-		$data = Blogs::orderBy('id','desc')->paginate(50);
+		$data = Blogs::orderBy('id','desc')->get();
 		return view('admin.blog', ['data' => $data]);
 	}//<--- End Method
 
@@ -1955,7 +1955,7 @@ class AdminController extends Controller
 
 	public function deposits()
 	{
-		$data = Deposits::orderBy('id', 'desc')->paginate(30);
+		$data = Deposits::orderBy('id', 'desc')->get();
 		return view('admin.deposits')->withData($data);
 	}//<--- End Method
 
@@ -2182,7 +2182,7 @@ class AdminController extends Controller
 
 	public function referrals()
 	{
-		$data = Referrals::orderBy('id', 'desc')->paginate(20);
+		$data = Referrals::orderBy('id', 'desc')->get();
 		return view('admin.referrals')->withData($data);
 	}
 
@@ -2214,7 +2214,7 @@ class AdminController extends Controller
 
 	public function products()
 	{
-		$data = Products::orderBy('id', 'desc')->paginate(20);
+		$data = Products::orderBy('id', 'desc')->get();
 		return view('admin.products')->withData($data);
 	}
 
@@ -2246,7 +2246,7 @@ class AdminController extends Controller
 
 	public function sales()
 	{
-		$sales = Purchases::orderBy('id', 'desc')->paginate(10);
+		$sales = Purchases::orderBy('id', 'desc')->get();
 
 		return view('admin.sales')->withSales($sales);
 	}
@@ -2542,7 +2542,7 @@ class AdminController extends Controller
 
 	public function storiesPosts()
 	{
-		$data = Stories::latest()->paginate(20);
+		$data = Stories::latest()->get();
 
 		return view('admin.stories-posts', ['data' => $data]);
 	}
@@ -2566,7 +2566,7 @@ class AdminController extends Controller
 
 	public function storiesBackgrounds()
 	{
-		$data = StoryBackgrounds::orderBy('id', 'desc')->paginate(20);
+		$data = StoryBackgrounds::orderBy('id', 'desc')->get();
 		return view('admin.stories-backgrounds', ['data' => $data]);
 	}
 

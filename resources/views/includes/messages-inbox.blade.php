@@ -108,7 +108,7 @@ if ($msg->last()->from_user_id == auth()->user()->id && $msg->last()->to()->id !
 					 @if ($messagesCount != 0)
 					 <span class="badge badge-pill badge-primary mr-1">{{ $messagesCount }}</span>
 				 @endif
-					 {!! $icon ?? $icon !!} {!! $iconMedia !!} {{ $msg->last()->message == '' ? $format : null }}
+					 {!! $icon ?? $icon !!} {!! $iconMedia !!} {!! $msg->last()->message == '' ? $format : null !!}
 
 					 @if ($msg->last()->price != 0.00
 					 		&& $allMediaMessages->count() == 0
@@ -119,7 +119,8 @@ if ($msg->last()->from_user_id == auth()->user()->id && $msg->last()->to()->id !
 						 <i class="feather icon-lock mr-1"></i> @lang('users.content_locked')
 
 					 @else
-						 {{ $msg->last()->message }}
+						 {{-- {!! $msg->last()->message !!} --}}
+                         {{ Str::limit(strip_tags($msg->last()->message), 50, '...') }}
 					 @endif
 
 				 </p>

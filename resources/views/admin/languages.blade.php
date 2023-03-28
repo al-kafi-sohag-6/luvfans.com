@@ -30,17 +30,16 @@
 				<div class="card-body p-lg-4">
 
           <div class="table-responsive p-0">
-            <table class="table table-hover">
-             <tbody>
-
-              @if ($data->count() !=  0)
+            <table class="table table-hover" id="dataTable">
+             <thead>
                  <tr>
                     <th class="active">ID</th>
                     <th class="active">{{ trans('admin.name') }}</th>
                     <th class="active">{{ trans('admin.abbreviation') }}</th>
                     <th class="active">{{ trans('admin.actions') }}</th>
                   </tr>
-
+             </thead>
+             <tbody>
                 @foreach( $data as $lang )
                   <tr>
                     <td>{{ $lang->id }}</td>
@@ -68,10 +67,6 @@
                   </tr><!-- /.TR -->
                   @endforeach
 
-                  @else
-                    <h5 class="text-center p-5 text-muted fw-light m-0">{{ trans('general.no_results_found') }}</h5>
-                  @endif
-
                 </tbody>
               </table>
           </div>
@@ -82,4 +77,34 @@
 
 	</div><!-- end row -->
 </div><!-- end content -->
+@endsection
+
+@section('javascript')
+<script>
+    $( document ).ready(function() {
+        let table = new DataTable('#dataTable', {
+            dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: '{{ __('admin.languages') }}',
+                    download: 'open',
+                    orientation: 'potrait',
+                    pagesize: 'A4',
+                    exportOptions: {
+                        columns: [0, 1, 2]
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '{{ __('admin.languages') }}',
+                    exportOptions: {
+                        columns: [0, 1, 2]
+                    }
+                }, 'pageLength'
+                ]
+        });
+
+    });
+</script>
+
 @endsection

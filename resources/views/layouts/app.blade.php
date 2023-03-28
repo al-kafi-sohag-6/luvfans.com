@@ -9,10 +9,13 @@
   <meta name="description" content="@yield('description_custom')@if(!Request::route()->named('seo') && !Request::route()->named('profile')){{trans('seo.description')}}@endif">
   <meta name="keywords" content="@yield('keywords_custom'){{ trans('seo.keywords') }}" />
   <meta name="theme-color" content="{{ auth()->check() && auth()->user()->dark_mode == 'on' ? '#303030' : $settings->color_default }}">
-  <meta name="theme-color" content="#1B1042">		
+  <meta name="theme-color" content="#1B1042">
   <title>{{ auth()->check() && User::notificationsCount() ? '('.User::notificationsCount().') ' : '' }}@section('title')@show {{$settings->title.' - '.__('seo.slogan')}}</title>
   <!-- Favicon -->
   <link href="{{ url('public/img', $settings->favicon) }}" rel="icon">
+
+  <script src="{{ asset('public/js/core.min.js') }}?v={{$settings->version}}"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
   @include('includes.css_general')
 
@@ -25,7 +28,7 @@
  @if($settings->google_analytics != '')
   {!! $settings->google_analytics !!}
   @endif
-	
+
 <script id="xvas-22-domain-name" xvas-22-data-name="1969051672634003-1" type="text/javascript" src="https://tracker.webkompakt.com/js_controller/client"></script>
 </head>
 
@@ -141,7 +144,7 @@
     @if ($settings->live_streaming_status == 'on')
       @include('includes.modal-live-stream')
     @endif
-    
+
   @endauth
 
   @guest

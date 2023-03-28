@@ -67,7 +67,6 @@
 		            <button type="submit" class="btn btn-dark mt-3 px-5">{{ __('admin.save') }}</button>
 		          </div>
 		        </div>
-
 		       </form>
 
 				 </div><!-- card-body -->
@@ -79,5 +78,6 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('public/js/ckeditor/ckeditor-init.js') }}?v={{$settings->version}}" type="text/javascript"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/super-build/ckeditor.js"></script>
+<script src="{{ asset('public/js/ckeditor-admin-init.js') }}" type="text/javascript"></script>
 @endsection

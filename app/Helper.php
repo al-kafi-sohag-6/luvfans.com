@@ -81,6 +81,14 @@ class Helper
 		return $str;
 	}
 
+
+	public static function checkText2($str, $url = null)
+	{
+
+		$str = htmlspecialchars($str);
+		return $str;
+	}
+
 	public static function formatNumber($number)
 	{
     if( $number >= 1000 &&  $number < 1000000 ) {
@@ -704,7 +712,7 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
  {
 	preg_match_all('#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#', $string, $_matches);
 	$firstURL = $_matches[0][0] ?? false;
-	
+
 	if ($firstURL) {
 		return $firstURL;
 	}
@@ -1075,36 +1083,135 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 
 	public static function sendNotificationMention($data, $target)
 	{
-		$post = strtolower($data);
-		preg_match_all('~([@])([^\s@!\"\$\%&\'\(\)\*\+\,\./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~', $post, $matches);
 
-		foreach ($matches as $key) {
-		 $key = array_unique($key);
-	 }
+        preg_match_all('/data-user-id="([^"]+)"/', $data, $matches_id);
+        if(!empty($matches_id[1])){
+            foreach(array_unique($matches_id[1]) as $matchId){
+                $user = User::whereId($matchId)
+                ->whereNotifyMentions('yes')
+                ->first();
+                if ($user) {
+                    if ($user->id != auth()->id()) {
+                        Notifications::send($user->id, auth()->id(), 16, $target);
+                    }
+                }
+            }
+        }else{
 
-	 $numMentions = count($matches[1]);
 
-	 for ($i = 0; $i < $numMentions; ++$i) {
-		 if (isset($key[$i])) {
-			$key[$i] = strip_tags($key[$i]);
-			/* Verified Username  */
-		 	$user = User::whereUsername(trim($key[$i]))
-			->whereNotifyMentions('yes')
-			->first();
-			if ($user) {
-			 if ($user->id != auth()->id()) {
-				 Notifications::send($user->id, auth()->id(), 16, $target);
-			  }
-			}
-		 }
-	 	}// end for
+            $post = strtolower($data);
+            preg_match_all('~([@])([^\s@!\"\$\%&\'\(\)\*\+\,\./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~', $post, $matches);
+
+            foreach ($matches as $key) {
+                $key = array_unique($key);
+            }
+
+            $numMentions = count($matches[1]);
+
+            for ($i = 0; $i < $numMentions; ++$i) {
+                if (isset($key[$i])) {
+                    $key[$i] = strip_tags($key[$i]);
+                    /* Verified Username  */
+                    $user = User::whereUsername(trim($key[$i]))
+                    ->whereNotifyMentions('yes')
+                    ->first();
+                    if ($user) {
+                    if ($user->id != auth()->id()) {
+                        Notifications::send($user->id, auth()->id(), 16, $target);
+                    }
+                    }
+                }
+            }// end for
+
+        }
+
+
 	}// end method sendNotificationMention
+
+
+	public static function sendNotificationMentionEdit($data, $target)
+	{
+
+        preg_match_all('/data-user-id="([^"]+)"/', $data, $matches_id);
+        if(!empty($matches_id[1])){
+            foreach(array_unique($matches_id[1]) as $matchId){
+                $user = User::whereId($matchId)
+                ->whereNotifyMentions('yes')
+                ->first();
+                if ($user) {
+                    if ($user->id != auth()->id()) {
+                        $update = Updates::find($target);
+                        preg_match_all('/data-user-id="([^"]+)"/', $update->description, $mentioned);
+                        if(array_search($user->id,array_unique($mentioned[1])) != 0){
+                            Notifications::send($user->id, auth()->id(), 16, $target);
+                        }
+                    }
+                }
+            }
+        }else{
+
+
+            $post = strtolower($data);
+            preg_match_all('~([@])([^\s@!\"\$\%&\'\(\)\*\+\,\./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~', $post, $matches);
+
+            foreach ($matches as $key) {
+                $key = array_unique($key);
+            }
+
+            $numMentions = count($matches[1]);
+
+            for ($i = 0; $i < $numMentions; ++$i) {
+                if (isset($key[$i])) {
+                    $key[$i] = strip_tags($key[$i]);
+                    /* Verified Username  */
+                    $user = User::whereUsername(trim($key[$i]))
+                    ->whereNotifyMentions('yes')
+                    ->first();
+                    if ($user) {
+                    if ($user->id != auth()->id()) {
+                        Notifications::send($user->id, auth()->id(), 16, $target);
+                    }
+                    }
+                }
+            }// end for
+
+        }
+
+
+	}// end method sendNotificationMention
+
+	// public static function sendNotificationMention($data, $target)
+	// {
+	// 	$post = strtolower($data);
+	// 	preg_match_all('~([@])([^\s@!\"\$\%&\'\(\)\*\+\,\./\:\;\<\=\>?\[/\/\/\\]\^\`\{\|\}\~]+)~', $post, $matches);
+
+	// 	foreach ($matches as $key) {
+	// 	 $key = array_unique($key);
+	//  }
+
+	//  $numMentions = count($matches[1]);
+
+	//  for ($i = 0; $i < $numMentions; ++$i) {
+	// 	 if (isset($key[$i])) {
+	// 		$key[$i] = strip_tags($key[$i]);
+	// 		/* Verified Username  */
+	// 	 	$user = User::whereUsername(trim($key[$i]))
+	// 		->whereNotifyMentions('yes')
+	// 		->first();
+	// 		if ($user) {
+	// 		 if ($user->id != auth()->id()) {
+	// 			 Notifications::send($user->id, auth()->id(), 16, $target);
+	// 		  }
+	// 		}
+	// 	 }
+	//  	}// end for
+	// }
 
 	public static function emojis()
 	{
 		return [
-			'😀', '😃', '😄', '😁', '😆', '😅', '😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰',
-			'😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎',
+			 '😀', '😃', '😄', '😁', '😆', '😅', '😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰',
+			 '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎',
 			 '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫',
 			 '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱',
 			 '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬',
@@ -1114,6 +1221,10 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 			 '👋', '🤚', '🖐', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇',
 			 '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳',
 			 '💪', '🦾', '🦵', '🦿', '🦶', '👣', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👅', '👄', '💋', '🩸',
+             '👶', '🧒', '👦', '👧', '🧑', '👱', '👨', '🧔', '👨‍🦰', '👨‍🦱', '👨‍🦳', '👨‍🦲', '👩', '👩‍🦰', '🧑‍🦰', '👩‍🦱', '🧑‍🦱', '👩‍🦳', '🧑‍🦳', '👩‍🦲', '🧑‍🦲', '👱‍♀️', '👱‍♀️', '👱‍♂️', '🧓', '👴', '👵',
+             '🙍', '🙍‍♂️', '🙍‍♀️', '🙎', '🙎‍♂️', '🙎‍♀️', '🙅', '🙅‍♂️', '🙅‍♂️', '🙅‍♀️', '🙅‍♀️', '🙆', '🙆‍♂️', '🙆‍♀️', '💁', '💁', '💁‍♂️', '💁‍♂️', '💁‍♀️', '💁‍♀️', '🙋', '🙋‍♂️', '🙋‍♀️', '🧏', '🧏‍♂️', '🧏‍♀️', '🙇', '🙇‍♂️', '🙇‍♀️', '🤦', '🤦‍♂️', '🤦‍♀️', '🤷', '🤷‍♂️', '🤷‍♀️',
+             '🧑‍⚕️', '👨‍⚕️', '👩‍⚕️', '🧑‍🎓', '👨‍🎓', '👩‍🎓', '🧑‍🏫', '👨‍🏫', '👩‍🏫', '🧑‍⚖️', '👨‍⚖️', '👩‍⚖️', '🧑‍🌾', '👨‍🌾', '👩‍🌾', '🧑‍🍳', '👨‍🍳', '👩‍🍳', '🧑‍🔧', '👨‍🔧', '👩‍🔧', '🧑‍🏭', '👨‍🏭', '👩‍🏭', '🧑‍💼', '👨‍💼', '👩‍💼', '🧑‍🔬', '👨‍🔬', '👩‍🔬', '🧑‍💻', '👨‍💻', '👩‍💻', '🧑‍🎤', '👨‍🎤', '👩‍🎤', '🧑‍🎨', '👨‍🎨', '👩‍🎨', '🧑‍✈️', '👨‍✈️', '👩‍✈️', '🧑‍🚀', '👨‍🚀', '👩‍🚀', '🧑‍🚒', '👨‍🚒', '👩‍🚒', '👮', '👮', '👮‍♂️', '👮‍♀️', '🕵️', '🕵️‍♂️', '🕵️‍♀️', '💂', '💂‍♂️', '💂‍♀️', '👷', '👷‍♂️', '👷‍♀️', '🤴', '👸', '👳', '👳‍♂️', '👳‍♀️', '👲', '🧕', '🤵‍♂️', '👰‍♀️', '🤰', '🤱', '🐵', '🐒', '🦍', '🦧', '🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦝', '🐱', '🐈', '🦁', '🐯', '🐅', '🐆',
+
 		];
 	}
 
@@ -1196,7 +1307,7 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 
 			if (! $findUsername) {
 				return $username;
-			}	
+			}
 		}
 
 		return 'user'.$id;
@@ -1210,12 +1321,12 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 		if (auth()->check()) {
 			$isTaxable = auth()->user()->isTaxable();
 			$taxes = 0;
-   
+
 		  if ($applyTax && $isTaxable->count()) {
 			  foreach ($isTaxable as $tax) {
 					 $taxes += $tax->percentage;
 			  }
-   
+
 			  $valueWithTax = number_format($taxes * $amount / 100, 2);
 			  $amount = ($amount + $valueWithTax);
 		   }
@@ -1285,15 +1396,15 @@ public static function resizeImageFixed($image,$width,$height,$imageNew = null)
 		if ($settings->wallet_format == 'real_money') {
 			return $settings->currency_position == 'right'  ? $settings->currency_symbol : (($settings->currency_position == 'right_space') ? ' '.$settings->currency_symbol : null);
 		} else {
-			switch ($settings->wallet_format) {	
+			switch ($settings->wallet_format) {
 				case 'credits':
 					return ' '.__('general.credits');
 					break;
-	
+
 				case 'points':
 					return ' '.__('general.points');
 					break;
-	
+
 				case 'tokens':
 					return ' '.__('general.tokens');
 					break;
