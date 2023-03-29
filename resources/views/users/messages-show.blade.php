@@ -223,6 +223,8 @@
 @endsection
 
 @section('javascript')
+
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/super-build/ckeditor.js"></script>
 <script src="{{ asset('public/js/message.js') }}"></script>
 <script src="{{ asset('public/js/messages.js') }}?v={{$settings->version}}"></script>
 <script src="{{ asset('public/js/fileuploader/fileuploader-msg.js') }}?v={{$settings->version}}"></script>

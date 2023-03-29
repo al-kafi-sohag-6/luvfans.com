@@ -37,24 +37,29 @@ class Role
 
 		if ($this->auth->guest()) {
 
-				return redirect()->guest('login')
-					->with(['login_required' => trans('auth.login_required')]);
+				return redirect()->guest('login')->with(['login_required' => trans('auth.login_required')]);
 
 		} else if ($this->auth->user()->role == 'normal') {
 			return redirect('/');
 
-		} else if ($request->route()->getName() != 'dashboard'
-					&& ! $this->auth->user()->hasPermission($request->route()->getName())
-					&& $request->isMethod('get')
-					) {
-						abort(403);
+		} else if ($request->route()->getName() != 'dashboard' && !$this->auth->user()->hasPermission($request->route()->getName()) && $request->isMethod('get')) {
+			if($this->auth->user()->hasPermission(explode(".", $request->route()->getName())[0]) ){
+		        return $next($request);
+            }
 
-				} else if ($this->auth->user()->permissions == 'limited_access'
-						&& $request->isMethod('post')
-						&& $request->route()->getName() != 'dashboard.earnings'
-					) {
-						return redirect()->back()->withUnauthorized(trans('general.unauthorized_action'));
-				}
+            abort(403);
+
+
+		}
+
+        // else if ($request->route()->getName() != 'dashboard' && !$this->auth->user()->hasPermission($request->route()->getName()) && $request->isMethod('get')) {
+		// 	abort(403);
+
+		// }
+
+        else if ($this->auth->user()->permissions == 'limited_access' && $request->isMethod('post') && $request->route()->getName() != 'dashboard.earnings') {
+			return redirect()->back()->withUnauthorized(trans('general.unauthorized_action'));
+		}
 
 		return $next($request);
 	}

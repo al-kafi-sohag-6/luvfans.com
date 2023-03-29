@@ -516,8 +516,8 @@ Route::group(['middleware' => 'private.content'], function() {
 	Route::post('panel/admin/settings/limits',[AdminController::class, 'saveSettingsLimits']);
 
     //Restrictions
-	Route::get('panel/admin/settings/restrictions',[RestrictionsController::class, 'settingsRestrictions'])->name('setting.restrictions');
-	Route::post('panel/admin/settings/restrictions',[RestrictionsController::class, 'saveRestrictions'])->name('setting.restrictions');
+	Route::get('panel/admin/settings/restrictions',[RestrictionsController::class, 'settingsRestrictions'])->name('general.setting.restrictions');
+	Route::post('panel/admin/settings/restrictions',[RestrictionsController::class, 'saveRestrictions'])->name('general.setting.restrictions');
 
 	// BILLING
 	Route::view('panel/admin/billing','admin.billing')->name('billing');
@@ -597,21 +597,21 @@ Route::group(['middleware' => 'private.content'], function() {
 
  	// Categories
  	Route::get('panel/admin/categories',[AdminController::class, 'categories'])->name('categories');
- 	Route::get('panel/admin/categories/add',[AdminController::class, 'addCategories'])->name('categories');
- 	Route::post('panel/admin/categories/add',[AdminController::class, 'storeCategories']);
- 	Route::get('panel/admin/categories/edit/{id}',[AdminController::class, 'editCategories'])->name('categories');
- 	Route::post('panel/admin/categories/update',[AdminController::class, 'updateCategories']);
- 	Route::post('panel/admin/categories/delete/{id}',[AdminController::class, 'deleteCategories']);
+ 	Route::get('panel/admin/categories/add',[AdminController::class, 'addCategories'])->name('categories.add');
+ 	Route::post('panel/admin/categories/add',[AdminController::class, 'storeCategories'])->name('categories.add');
+ 	Route::get('panel/admin/categories/edit/{id}',[AdminController::class, 'editCategories'])->name('categories.edit');
+ 	Route::post('panel/admin/categories/update',[AdminController::class, 'updateCategories'])->name('categories.edit');
+ 	Route::post('panel/admin/categories/delete/{id}',[AdminController::class, 'deleteCategories'])->name('categories.delete');
  	Route::get('panel/admin/categories/status-change/{id}',[AdminController::class, 'statusChange'])->name('categories.status.change');
  	Route::get('panel/admin/categories/search-change/{id}',[AdminController::class, 'searchChange'])->name('categories.search.change');
 
 	//Subcategories
-	Route::get('panel/admin/sub-categories',[AdminController::class, 'sub_categories']);
- 	Route::get('panel/admin/sub-categories/add',[AdminController::class, 'sub_AddCategories']);
- 	Route::post('panel/admin/sub-categories/add',[AdminController::class, 'sub_storeCategories']);
- 	Route::get('panel/admin/sub-categories/edit/{id}',[AdminController::class, 'sub_editCategories']);
- 	Route::post('panel/admin/sub-categories/update',[AdminController::class, 'sub_updateCategories']);
- 	Route::post('panel/admin/sub-categories/delete/{id}',[AdminController::class, 'sub_deleteCategories']);
+	Route::get('panel/admin/sub-categories',[AdminController::class, 'sub_categories'])->name('sub-categories');
+ 	Route::get('panel/admin/sub-categories/add',[AdminController::class, 'sub_AddCategories'])->name('sub-categories.add');
+ 	Route::post('panel/admin/sub-categories/add',[AdminController::class, 'sub_storeCategories'])->name('sub-categories.add');
+ 	Route::post('panel/admin/sub-categories/update',[AdminController::class, 'sub_updateCategories'])->name('sub-categories.edit');
+ 	Route::get('panel/admin/sub-categories/edit/{id}',[AdminController::class, 'sub_editCategories'])->name('sub-categories.edit');
+ 	Route::post('panel/admin/sub-categories/delete/{id}',[AdminController::class, 'sub_deleteCategories'])->name('sub-categories.delete');
  	Route::get('panel/admin/sub-categories/status-change/{id}',[AdminController::class, 'statusChangeSub'])->name('sub-categories.status.change');
  	Route::get('panel/admin/sub-categories/search-change/{id}',[AdminController::class, 'searchChangeSub'])->name('sub-categories.search.change');
 

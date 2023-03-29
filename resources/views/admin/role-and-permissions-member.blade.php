@@ -110,7 +110,7 @@
 						<div class="row mb-3">
 							<div class="col-sm-10 offset-sm-2">
 								<div class="form-check">
-									<input class="form-check-input check" name="permissions[]" value="general_settings" @if (isset($permissions) && in_array('general_settings', $permissions)) checked="checked" @endif type="checkbox" id="gridCheck4">
+									<input class="form-check-input check" name="permissions[]" value="general" @if (isset($permissions) && in_array('general', $permissions)) checked="checked" @endif type="checkbox" id="gridCheck4">
 									<label class="form-check-label" for="gridCheck4">
 										{{ __('admin.general_settings') }}
 									</label>
@@ -366,6 +366,17 @@
 									<input class="form-check-input check" name="permissions[]" value="categories" @if (isset($permissions) && in_array('categories', $permissions)) checked="checked" @endif type="checkbox" id="categories">
 									<label class="form-check-label" for="categories">
 										{{ __('admin.categories') }}
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<div class="col-sm-10 offset-sm-2">
+								<div class="form-check">
+									<input class="form-check-input check" name="permissions[]" value="sub-categories" @if (isset($permissions) && in_array('sub-categories', $permissions)) checked="checked" @endif type="checkbox" id="sub-categories">
+									<label class="form-check-label" for="sub-categories">
+										{{ __('admin.subcategories') }}
 									</label>
 								</div>
 							</div>

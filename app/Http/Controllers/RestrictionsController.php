@@ -44,7 +44,7 @@ class RestrictionsController extends Controller
         foreach($comments as $comment){
             if($comment != '' && $comment != ';'){
                 $save_c = new RestrictedWord;
-                $save_c->word = $comment;
+                $save_c->word = Str::of($comment)->ltrim();
                 $save_c->type = 'comment';
                 $save_c->save();
             }
@@ -53,13 +53,13 @@ class RestrictionsController extends Controller
         foreach($messages as $message){
             if($message != '' && $message != ';'){
                 $save_m = new RestrictedWord;
-                $save_m->word = $message;
+                $save_m->word = Str::of($message)->ltrim();
                 $save_m->type = 'message';
                 $save_m->save();
             }
         }
 		Session::flash('success_message',  __('general.send_success'));
-        return redirect()->route('setting.restrictions');
+        return redirect()->route('general.setting.restrictions');
     }
 
 
